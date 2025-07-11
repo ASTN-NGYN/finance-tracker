@@ -27,6 +27,7 @@ public class Category {
         this.description = description;
     }
 
+    // Getters and setters to modify field
     public Long getId() {
         return id;
     }
