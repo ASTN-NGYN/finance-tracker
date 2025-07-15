@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 
-@Entity     // Tells SB this class represents a database table
+@Entity     // Tells Spring Boot this class represents a database table
 @Table(name = "categories")     // Table name
 public class Category {
     
