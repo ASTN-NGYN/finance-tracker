@@ -9,11 +9,16 @@ import org.springframework.stereotype.Repository;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 
-
+/*
+ * Spring Data JPA Repository interface. A special interface that gives you 
+ * automatic database access to Category entities.
+ * 
+ * CategoryRepository is the app's gateway to the database for Category objects.
+ */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {     // Extends, gives you access to CRUD operations
     
-    // Find category by name (useful for lookups)
+    // Find category by name (useful for lookups), optional means it might or might not be empty
     Optional<Category> findByName(String name);
 
     // Find all categories by transaction type (income vs expense categories)
