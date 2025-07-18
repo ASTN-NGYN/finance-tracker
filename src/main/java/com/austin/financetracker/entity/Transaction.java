@@ -74,6 +74,10 @@ public class Transaction {
         this.description = description;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public LocalDate getDate() {
         return date;
     }
