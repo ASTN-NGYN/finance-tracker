@@ -15,7 +15,7 @@ import com.austin.financetracker.entity.Transaction;
 import com.austin.financetracker.service.TransactionService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/transactions")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -23,7 +23,7 @@ public class TransactionController {
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
-    
+
     // GET /transactions
     @GetMapping
     public List<Transaction> getAllTransactions() {
