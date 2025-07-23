@@ -3,7 +3,6 @@ package com.austin.financetracker.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.austin.financetracker.entity.Category;
@@ -12,10 +11,13 @@ import com.austin.financetracker.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
-    
-    @Autowired
-    private CategoryRepository categoryRepository;
 
+    private final CategoryRepository categoryRepository;
+    
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+    
     // Get all categories
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
