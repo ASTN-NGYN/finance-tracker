@@ -2,7 +2,6 @@ package com.austin.financetracker.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +18,12 @@ import com.austin.financetracker.service.TransactionService;
 @RequestMapping
 public class TransactionController {
 
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+    
     // GET /transactions
     @GetMapping
     public List<Transaction> getAllTransactions() {
