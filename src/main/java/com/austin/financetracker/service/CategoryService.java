@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.austin.financetracker.dto.CategoryDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
@@ -34,20 +35,25 @@ public class CategoryService {
     }
 
     // Create new category
-    public Category createCategory(Category category) {
+    public Category createCategory(CategoryDTO categoryDTO) {
         // Business logic: Check if category already exists
-        if (categoryRepository.existsByName(category.getName())) {
-            throw new IllegalArgumentException("Category with name '" + category.getName() + "' already exists");
+        if (categoryRepository.existsByName(categoryDTO.getName())) {
+            throw new IllegalArgumentException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
+        Category category = new Category();
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
+        category.setType(categoryDTO.getType());
         return categoryRepository.save(category);
     }
 
     // Update existing category
-    public Category updateCategory(Long id, Category updatedCategory) {
+    public Category updateCategory(Long id, CategoryDTO updatedCategoryDTO) {
         return categoryRepository.findById(id)
                 .map(category -> {
-                    category.setName(updatedCategory.getName());
-                    category.setType(updatedCategory.getType());
+                    category.setName(updatedCategoryDTO.getName());
+                    category.setDescription(updatedCategoryDTO.getDescription());
+                    category.setType(updatedCategoryDTO.getType());
                     return categoryRepository.save(category);
                 })
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
