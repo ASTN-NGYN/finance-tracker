@@ -5,17 +5,21 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.austin.financetracker.dto.TransactionDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.Transaction;
+import com.austin.financetracker.repository.CategoryRepository;
 import com.austin.financetracker.repository.TransactionRepository;
 
 @Service
 public class TransactionService {
-    
-    private final TransactionRepository transactionRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    private final TransactionRepository transactionRepository;
+    private final CategoryRepository categoryRepository;
+    
+    public TransactionService(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     // Get all transactions
@@ -34,7 +38,17 @@ public class TransactionService {
     }
 
     // Create new transaction
-    public Transaction createTransaction(Transaction transaction) {
+    public Transaction createTransaction(TransactionDTO transactionDTO) {
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+            .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
+
+        Transaction transaction = new Transaction();
+        transaction.setAmount(transactionDTO.getAmount());
+        transaction.setDescription(transactionDTO.getDescription());
+        transaction.setDate(transactionDTO.getDate());
+        transaction.setType(transactionDTO.getType());
+        transaction.setCategory(category);
+
         return transactionRepository.save(transaction);
     }
 
