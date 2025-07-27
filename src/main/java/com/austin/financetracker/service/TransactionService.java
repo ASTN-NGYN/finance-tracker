@@ -53,15 +53,18 @@ public class TransactionService {
     }
 
     // Update transaction
-    public Transaction updateTransaction(Long id, Transaction updatedTransaction) {
+    public Transaction updateTransaction(Long id, TransactionDTO transactionDTO) {
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+            .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
+
         return transactionRepository.findById(id)
             .map(transaction -> {
                 // update fields
-                transaction.setAmount(updatedTransaction.getAmount());
-                transaction.setDescription(updatedTransaction.getDescription());
-                transaction.setDate(updatedTransaction.getDate());
-                transaction.setType(updatedTransaction.getType());
-                transaction.setCategory(updatedTransaction.getCategory());
+                transaction.setAmount(transactionDTO.getAmount());
+                transaction.setDescription(transactionDTO.getDescription());
+                transaction.setDate(transactionDTO.getDate());
+                transaction.setType(transactionDTO.getType());
+                transaction.setCategory(category);
                 return transactionRepository.save(transaction);
             })
             .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
