@@ -2,6 +2,7 @@ package com.austin.financetracker.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,13 @@ public class CategoryController {
     @PostMapping
     public Category createCategory(@RequestBody CategoryDTO categoryDTO) {
         return categoryService.createCategory(categoryDTO);
+    }
+
+    // POST /categories/default-categories
+    @PostMapping("/default-categories")
+    public ResponseEntity<String> createDefaultCategories() {
+        categoryService.createDefaultCategories();
+        return ResponseEntity.ok("Default categories created sucessfully");
     }
 
     // PUT /categories/{id}
