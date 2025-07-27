@@ -39,8 +39,8 @@ public class TransactionController {
 
     // PUT /transactions/{id}
     @PutMapping("/{id}")
-    public Transaction updateTransaction(@PathVariable Long id, @RequestBody Transaction transaction) {
-        return transactionService.updateTransaction(id, transaction);
+    public Transaction updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
+        return transactionService.updateTransaction(id, transactionDTO);
     }
 
     // DELETE /transactions/{id}
