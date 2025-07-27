@@ -1,7 +1,7 @@
 package com.austin.financetracker.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -23,22 +23,31 @@ public class TransactionService {
     }
 
     // Get all transactions
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public List<TransactionDTO> getAllTransactions() {
+        return transactionRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Get transaction by type
-    public Optional<Transaction> getTransactionById(Long id) {
-        return transactionRepository.findById(id);
+    public TransactionDTO getTransactionById(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
+        return convertToDTO(transaction);
     }
 
     // Get transaction by category
-    public List<Transaction> getTransactionsByCategory(Category category) {
-        return transactionRepository.findByCategory(category);
+    public List<TransactionDTO> getTransactionsByCategory(Long categoryId) {
+         Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
+        
+        return transactionRepository.findByCategory(category).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Create new transaction
-    public Transaction createTransaction(TransactionDTO transactionDTO) {
+    public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
             .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
 
@@ -49,25 +58,27 @@ public class TransactionService {
         transaction.setType(transactionDTO.getType());
         transaction.setCategory(category);
 
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        return convertToDTO(savedTransaction);
     }
 
     // Update transaction
-    public Transaction updateTransaction(Long id, TransactionDTO transactionDTO) {
+    public TransactionDTO updateTransaction(Long id, TransactionDTO transactionDTO) {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
 
-        return transactionRepository.findById(id)
-            .map(transaction -> {
-                // update fields
-                transaction.setAmount(transactionDTO.getAmount());
-                transaction.setDescription(transactionDTO.getDescription());
-                transaction.setDate(transactionDTO.getDate());
-                transaction.setType(transactionDTO.getType());
-                transaction.setCategory(category);
-                return transactionRepository.save(transaction);
-            })
-            .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
+
+        // Update fields
+        transaction.setAmount(transactionDTO.getAmount());
+        transaction.setDescription(transactionDTO.getDescription());
+        transaction.setDate(transactionDTO.getDate());
+        transaction.setType(transactionDTO.getType());
+        transaction.setCategory(category);
+
+        Transaction updatedTransaction = transactionRepository.save(transaction);
+        return convertToDTO(updatedTransaction);
     }
 
     // Delete transaction
@@ -77,4 +88,20 @@ public class TransactionService {
         }
         transactionRepository.deleteById(id);
     }
+
+    // Helper method to convert Transaction entity to TransactionDTO
+    private TransactionDTO convertToDTO(Transaction transaction) {
+        TransactionDTO dto = new TransactionDTO();
+        dto.setAmount(transaction.getAmount());
+        dto.setDescription(transaction.getDescription());
+        dto.setDate(transaction.getDate());
+        dto.setType(transaction.getType());
+
+        if (transaction.getCategory() != null) {
+            dto.setCategoryId(transaction.getCategory().getId());
+        }
+
+        return dto;
+    }
+
 }

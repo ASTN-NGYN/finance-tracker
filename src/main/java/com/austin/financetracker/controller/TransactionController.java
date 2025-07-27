@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.TransactionDTO;
-import com.austin.financetracker.entity.Transaction;
 import com.austin.financetracker.service.TransactionService;
 
 @RestController
@@ -27,19 +26,19 @@ public class TransactionController {
 
     // GET /transactions
     @GetMapping
-    public List<Transaction> getAllTransactions() {
+    public List<TransactionDTO> getAllTransactions() {
         return transactionService.getAllTransactions();
     }
 
     // POST /transactions
     @PostMapping
-    public Transaction createTransaction(@RequestBody TransactionDTO transactionDTO) {
+    public TransactionDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
         return transactionService.createTransaction(transactionDTO);
     }
 
     // PUT /transactions/{id}
     @PutMapping("/{id}")
-    public Transaction updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
+    public TransactionDTO updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
         return transactionService.updateTransaction(id, transactionDTO);
     }
 
