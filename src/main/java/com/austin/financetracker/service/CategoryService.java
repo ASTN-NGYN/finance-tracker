@@ -51,9 +51,15 @@ public class CategoryService {
     public Category updateCategory(Long id, CategoryDTO updatedCategoryDTO) {
         return categoryRepository.findById(id)
                 .map(category -> {
-                    category.setName(updatedCategoryDTO.getName());
-                    category.setDescription(updatedCategoryDTO.getDescription());
-                    category.setType(updatedCategoryDTO.getType());
+                    if (updatedCategoryDTO.getName() != null) {
+                        category.setName(updatedCategoryDTO.getName());
+                    }
+                    if (updatedCategoryDTO.getDescription() != null) {
+                        category.setDescription(updatedCategoryDTO.getDescription());
+                    }
+                    if (updatedCategoryDTO.getType() != null) {
+                        category.setType(updatedCategoryDTO.getType());
+                    }
                     return categoryRepository.save(category);
                 })
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
