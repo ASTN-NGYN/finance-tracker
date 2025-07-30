@@ -3,19 +3,22 @@ package com.austin.financetracker.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.austin.financetracker.dto.CategoryDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
-    
-    @Autowired
-    private CategoryRepository categoryRepository;
 
+    private final CategoryRepository categoryRepository;
+    
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+    
     // Get all categories
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -32,20 +35,31 @@ public class CategoryService {
     }
 
     // Create new category
-    public Category createCategory(Category category) {
+    public Category createCategory(CategoryDTO categoryDTO) {
         // Business logic: Check if category already exists
-        if (categoryRepository.existsByName(category.getName())) {
-            throw new IllegalArgumentException("Category with name '" + category.getName() + "' already exists");
+        if (categoryRepository.existsByName(categoryDTO.getName())) {
+            throw new IllegalArgumentException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
+        Category category = new Category();
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
+        category.setType(categoryDTO.getType());
         return categoryRepository.save(category);
     }
 
     // Update existing category
-    public Category updateCategory(Long id, Category updatedCategory) {
+    public Category updateCategory(Long id, CategoryDTO updatedCategoryDTO) {
         return categoryRepository.findById(id)
                 .map(category -> {
-                    category.setName(updatedCategory.getName());
-                    category.setType(updatedCategory.getType());
+                    if (updatedCategoryDTO.getName() != null) {
+                        category.setName(updatedCategoryDTO.getName());
+                    }
+                    if (updatedCategoryDTO.getDescription() != null) {
+                        category.setDescription(updatedCategoryDTO.getDescription());
+                    }
+                    if (updatedCategoryDTO.getType() != null) {
+                        category.setType(updatedCategoryDTO.getType());
+                    }
                     return categoryRepository.save(category);
                 })
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
@@ -73,13 +87,12 @@ public class CategoryService {
     public void createDefaultCategories() {
         // Income categories
         createCategoryIfNotExists("Salary", TransactionType.INCOME);
-        createCategoryIfNotExists("Freelance", TransactionType.INCOME);
         createCategoryIfNotExists("Investment", TransactionType.INCOME);
         // Expense categories
         createCategoryIfNotExists("Food", TransactionType.EXPENSE);
         createCategoryIfNotExists("Transportation", TransactionType.EXPENSE);
         createCategoryIfNotExists("Entertainment", TransactionType.EXPENSE);
-        createCategoryIfNotExists("Utilities", TransactionType.EXPENSE);
+        createCategoryIfNotExists("Housing", TransactionType.EXPENSE);
         createCategoryIfNotExists("Healthcare", TransactionType.EXPENSE);
 
     }
