@@ -2,6 +2,7 @@ package com.austin.financetracker.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,12 @@ public class TransactionController {
     @PostMapping
     public TransactionDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
         return transactionService.createTransaction(transactionDTO);
+    }
+
+    @PostMapping("/default-transactions")
+    public ResponseEntity<String> createDefaultTransaction() {
+        transactionService.createDefaultTransactions();
+        return ResponseEntity.ok("Default transactions created successfully");
     }
 
     // PUT /transactions/{id}

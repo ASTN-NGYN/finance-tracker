@@ -1,5 +1,7 @@
 package com.austin.financetracker.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.austin.financetracker.dto.TransactionDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.Transaction;
+import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
 import com.austin.financetracker.repository.TransactionRepository;
 
@@ -104,4 +107,53 @@ public class TransactionService {
         return dto;
     }
 
+    // Create default transactions for testing
+    public void createDefaultTransactions() {
+        
+        TransactionDTO salary = new TransactionDTO();
+        salary.setAmount(new BigDecimal("3000.00"));
+        salary.setDescription("Monthly Salary");
+        salary.setDate(LocalDate.now().minusDays(5));
+        salary.setType(TransactionType.INCOME);
+        salary.setCategoryId(1L);
+
+        TransactionDTO groceries = new TransactionDTO();
+        groceries.setAmount(new BigDecimal("150.75"));
+        groceries.setDescription("Grocery shopping");
+        groceries.setDate(LocalDate.now().minusDays(2));
+        groceries.setType(TransactionType.EXPENSE);
+        groceries.setCategoryId(4L);
+
+        TransactionDTO gas = new TransactionDTO();
+        gas.setAmount(new BigDecimal("45.20"));
+        gas.setDescription("Gas station");
+        gas.setDate(LocalDate.now().minusDays(3));
+        gas.setType(TransactionType.EXPENSE);
+        gas.setCategoryId(5L);
+
+        TransactionDTO rent = new TransactionDTO();
+        rent.setAmount(new BigDecimal("1200.00"));
+        rent.setDescription("Monthly rent");
+        rent.setDate(LocalDate.now().minusDays(15));
+        rent.setType(TransactionType.EXPENSE);
+        rent.setCategoryId(7L);
+
+        TransactionDTO entertainment = new TransactionDTO();
+        entertainment.setAmount(new BigDecimal("89.99"));
+        entertainment.setDescription("Netflix subscription");
+        entertainment.setDate(LocalDate.now().minusDays(7));
+        entertainment.setType(TransactionType.EXPENSE);
+        entertainment.setCategoryId(6L);
+        
+        try {
+        createTransaction(salary);
+        createTransaction(groceries);
+        createTransaction(gas);
+        createTransaction(rent);
+        createTransaction(entertainment);
+        System.out.println("Default transactions created successfully!");
+        } catch (Exception e) {
+            System.out.println("Error creating default transactions" + e.getMessage());
+        }
+    }
 }
