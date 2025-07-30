@@ -122,28 +122,28 @@ public class TransactionService {
         groceries.setDescription("Grocery shopping");
         groceries.setDate(LocalDate.now().minusDays(2));
         groceries.setType(TransactionType.EXPENSE);
-        groceries.setCategoryId(4L);
+        groceries.setCategoryId(3L);
 
         TransactionDTO gas = new TransactionDTO();
         gas.setAmount(new BigDecimal("45.20"));
         gas.setDescription("Gas station");
         gas.setDate(LocalDate.now().minusDays(3));
         gas.setType(TransactionType.EXPENSE);
-        gas.setCategoryId(5L);
+        gas.setCategoryId(4L);
 
         TransactionDTO rent = new TransactionDTO();
         rent.setAmount(new BigDecimal("1200.00"));
         rent.setDescription("Monthly rent");
         rent.setDate(LocalDate.now().minusDays(15));
         rent.setType(TransactionType.EXPENSE);
-        rent.setCategoryId(7L);
+        rent.setCategoryId(6L);
 
         TransactionDTO entertainment = new TransactionDTO();
         entertainment.setAmount(new BigDecimal("89.99"));
         entertainment.setDescription("Netflix subscription");
         entertainment.setDate(LocalDate.now().minusDays(7));
         entertainment.setType(TransactionType.EXPENSE);
-        entertainment.setCategoryId(6L);
+        entertainment.setCategoryId(5L);
         
         try {
         createTransaction(salary);

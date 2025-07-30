@@ -87,13 +87,12 @@ public class CategoryService {
     public void createDefaultCategories() {
         // Income categories
         createCategoryIfNotExists("Salary", TransactionType.INCOME);
-        createCategoryIfNotExists("Freelance", TransactionType.INCOME);
         createCategoryIfNotExists("Investment", TransactionType.INCOME);
         // Expense categories
         createCategoryIfNotExists("Food", TransactionType.EXPENSE);
         createCategoryIfNotExists("Transportation", TransactionType.EXPENSE);
         createCategoryIfNotExists("Entertainment", TransactionType.EXPENSE);
-        createCategoryIfNotExists("Utilities", TransactionType.EXPENSE);
+        createCategoryIfNotExists("Housing", TransactionType.EXPENSE);
         createCategoryIfNotExists("Healthcare", TransactionType.EXPENSE);
 
     }
