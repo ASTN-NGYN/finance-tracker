@@ -43,6 +43,12 @@ public class TransactionController {
         return transactionService.getTransactionById(id);
     }
 
+    // GET /transactions/category?categoryId={id} (gets by category)
+    @GetMapping("/category")
+    public List<TransactionDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
+        return transactionService.getTransactionsByCategory(categoryId);
+    }
+
     // POST /transactions
     @PostMapping
     public TransactionDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
