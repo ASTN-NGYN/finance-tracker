@@ -1,6 +1,7 @@
 package com.austin.financetracker.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,11 @@ public class CategoryController {
     @GetMapping
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Category> getCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
     }
 
     // POST /categories
