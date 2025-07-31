@@ -1,6 +1,7 @@
 package com.austin.financetracker.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.CategoryDTO;
 import com.austin.financetracker.entity.Category;
+import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.CategoryService;
 
 @RestController
@@ -26,10 +29,18 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    // GET /categories
+    // GET /categories or GET /categories?type=EXPENSE (gets by type)
     @GetMapping
-    public List<Category> getAllCategories() {
+    public List<Category> getAllCategories(@RequestParam(required = false) TransactionType type) {
+        if (type != null) {
+            return categoryService.getCategoriesByType(type);
+        }
         return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Category> getCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
     }
 
     // POST /categories

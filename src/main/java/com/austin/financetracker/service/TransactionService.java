@@ -32,7 +32,7 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-    // Get transaction by type
+    // Get transaction by id
     public TransactionDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
@@ -47,6 +47,11 @@ public class TransactionService {
         return transactionRepository.findByCategory(category).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<TransactionDTO> getTransactionsByType(TransactionType type) {
+        List<Transaction> transactions = transactionRepository.findByType(type);
+        return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     // Create new transaction

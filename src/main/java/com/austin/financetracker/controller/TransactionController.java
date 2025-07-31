@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.TransactionDTO;
+import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.TransactionService;
+
 
 @RestController
 @RequestMapping("/transactions")
@@ -25,10 +28,19 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    // GET /transactions
+    // GET /transactions (gets all) or GET /transactions?type=EXPENSE (gets by type)
     @GetMapping
-    public List<TransactionDTO> getAllTransactions() {
+    public List<TransactionDTO> getAllTransactions(@RequestParam(required = false) TransactionType type) {
+        if (type != null) {
+            return transactionService.getTransactionsByType(type);
+        }
         return transactionService.getAllTransactions();
+    }
+
+    // GET /transactions/{id}
+    @GetMapping("/{id}")
+    public TransactionDTO getTransactionById(@PathVariable Long id) {
+        return transactionService.getTransactionById(id);
     }
 
     // POST /transactions
