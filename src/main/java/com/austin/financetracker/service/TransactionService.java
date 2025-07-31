@@ -49,6 +49,11 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
+    public List<TransactionDTO> getTransactionsByType(TransactionType type) {
+        List<Transaction> transactions = transactionRepository.findByType(type);
+        return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     // Create new transaction
     public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
