@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.austin.financetracker.dto.TransactionDTO;
 import com.austin.financetracker.service.TransactionService;
 
+
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -29,6 +30,12 @@ public class TransactionController {
     @GetMapping
     public List<TransactionDTO> getAllTransactions() {
         return transactionService.getAllTransactions();
+    }
+
+    // GET /transactions/{id}
+    @GetMapping("/{id}")
+    public TransactionDTO getTransactionById(@PathVariable Long id) {
+        return transactionService.getTransactionById(id);
     }
 
     // POST /transactions

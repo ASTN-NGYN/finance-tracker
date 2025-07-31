@@ -32,7 +32,7 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-    // Get transaction by type
+    // Get transaction by id
     public TransactionDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
