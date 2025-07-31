@@ -29,7 +29,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    // GET /categories
+    // GET /categories or GET /categories?type=EXPENSE (gets by type)
     @GetMapping
     public List<Category> getAllCategories(@RequestParam(required = false) TransactionType type) {
         if (type != null) {
