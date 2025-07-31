@@ -54,6 +54,14 @@ public class TransactionService {
         return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<TransactionDTO> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+        throw new RuntimeException("Start date cannot be after end date");
+        }
+        List<Transaction> transactions = transactionRepository.findByDateBetween(startDate, endDate);
+        return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     // Create new transaction
     public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
