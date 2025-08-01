@@ -64,6 +64,7 @@ public class TransactionController {
         return transactionService.createTransaction(transactionDTO);
     }
 
+    // POST /transactions/default-transactions
     @PostMapping("/default-transactions")
     public ResponseEntity<String> createDefaultTransaction() {
         transactionService.createDefaultTransactions();
