@@ -31,13 +31,14 @@ public class CategoryController {
 
     // GET /categories or GET /categories?type=EXPENSE (gets by type)
     @GetMapping
-    public List<Category> getAllCategories(@RequestParam(required = false) TransactionType type) {
+    public List<Category> getCategory(@RequestParam(required = false) TransactionType type) {
         if (type != null) {
             return categoryService.getCategoriesByType(type);
         }
         return categoryService.getAllCategories();
     }
 
+    // GET /categories/{id}
     @GetMapping("/{id}")
     public Optional<Category> getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id);

@@ -1,5 +1,6 @@
 package com.austin.financetracker.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -43,12 +44,27 @@ public class TransactionController {
         return transactionService.getTransactionById(id);
     }
 
+    // GET /transactions/category?categoryId={id} (gets by category)
+    @GetMapping("/category")
+    public List<TransactionDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
+        return transactionService.getTransactionsByCategory(categoryId);
+    }
+
+    // GET /transactions/range?startDate=2024-01-01&endDate=2024-01-31
+    @GetMapping("/range")
+    public List<TransactionDTO> getTransactionsByDateRange(
+        @RequestParam LocalDate startDate,
+        @RequestParam LocalDate endDate) {
+            return transactionService.getTransactionsByDateRange(startDate, endDate);
+        }
+
     // POST /transactions
     @PostMapping
     public TransactionDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
         return transactionService.createTransaction(transactionDTO);
     }
 
+    // POST /transactions/default-transactions
     @PostMapping("/default-transactions")
     public ResponseEntity<String> createDefaultTransaction() {
         transactionService.createDefaultTransactions();
