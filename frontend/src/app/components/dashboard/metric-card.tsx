@@ -15,7 +15,7 @@ export function MetricCard({ title, value, icon: Icon, color = "#3b82f6" }: Metr
       <CardContent className="flex items-center justify-between p-6">
         <div>
           <p className="text-md font-medium text-muted-foreground">{title}</p>
-          <p className="text-3xl font-bold">{value}</p>
+          <p className="text-2xl font-bold">{value}</p>
         </div>
         <div
           className="p-3 rounded-full"
