@@ -13,34 +13,36 @@ export function RecentTransactionsTable() {
     ];
 
     return (
-        <Table className="">
-            <TableCaption>A list of recent transactions.</TableCaption>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {transactions.map((tx, i) => (
-                    <TableRow key={i}>
-                        <TableCell>{tx.description}</TableCell>
-                        <TableCell>{tx.category}</TableCell>
-                        <TableCell>{tx.date}</TableCell>
-                        <TableCell
-                            className={`text-right font-medium ${
-                            tx.amount < 0 ? "text-red-500" : "text-green-500"
-                            }`}
-                        >
-                            {tx.amount < 0
-                            ? `-$${Math.abs(tx.amount).toFixed(2)}`
-                            : `$${tx.amount.toFixed(2)}`}
-                        </TableCell>
+        <div className="bg-white rounded-md shadow-md border border-gray-200">
+            <Table className="">
+                <TableCaption>A list of recent transactions.</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {transactions.map((tx, i) => (
+                        <TableRow key={i}>
+                            <TableCell>{tx.description}</TableCell>
+                            <TableCell>{tx.category}</TableCell>
+                            <TableCell>{tx.date}</TableCell>
+                            <TableCell
+                                className={`text-right font-medium ${
+                                tx.amount < 0 ? "text-red-500" : "text-green-500"
+                                }`}
+                            >
+                                {tx.amount < 0
+                                ? `-$${Math.abs(tx.amount).toFixed(2)}`
+                                : `$${tx.amount.toFixed(2)}`}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     )
 }

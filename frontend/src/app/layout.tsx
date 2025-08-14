@@ -27,12 +27,12 @@ export default function RootLayout({
    return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-500`}
       >
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-screen bg-[#FCFCFD]">
               <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
                 <SidebarTrigger className="-ml-1 hover:cursor-pointer" />
                 <h1 className="text-xl font-semibold mx-auto">Personal Finance Tracker</h1>
