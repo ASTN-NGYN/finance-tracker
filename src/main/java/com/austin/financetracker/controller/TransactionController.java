@@ -1,5 +1,6 @@
 package com.austin.financetracker.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,6 +37,12 @@ public class TransactionController {
             return transactionService.getTransactionsByType(type);
         }
         return transactionService.getAllTransactions();
+    }
+
+    // GET /transactions/total-income
+    @GetMapping("/total-income")
+    public BigDecimal getTotalIncome() {
+        return transactionService.getTotalIncome();
     }
 
     // GET /transactions/{id}
