@@ -37,6 +37,11 @@ public class TransactionService {
         return total != null ? total : BigDecimal.ZERO;
     }
 
+    public BigDecimal getTotalExpenses() {
+        BigDecimal total = transactionRepository.getTotalAmountByType(TransactionType.EXPENSE);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
     // Get transaction by id
     public TransactionDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
