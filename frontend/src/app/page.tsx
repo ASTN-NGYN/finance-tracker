@@ -1,13 +1,29 @@
+"use client"
+import { useEffect, useState } from "react";
 import { DollarSign, TrendingDown, BarChart3, PiggyBank } from 'lucide-react';
 import { MetricCard } from '@/app/components/dashboard/metric-card';
 import { RecentTransactionsTable } from './components/dashboard/recent-transactions-table';
+import { getTotalIncome } from "./utils/api";
 
 export default function Home() {
+  const [totalIncome, setTotalIncome] = useState<number>(0);
+  const [totalExpense, setTotalExpenses] = useState<number>(0);
+  
+  useEffect(() => {
+    async function fetchTotals() {
+      const income = await getTotalIncome();
+      setTotalIncome(income);
+    }
+    fetchTotals();
+  }, []);
+
+  // const monthlyBudgetLeft = 500 - totalExpenses;
+
   return (
     <main>
       <MetricCard
         title="Total Income"
-        value="$5,240.00"
+        value={`$${totalIncome.toFixed(2)}`}
         icon={DollarSign}
         color="#10b981"
       />
