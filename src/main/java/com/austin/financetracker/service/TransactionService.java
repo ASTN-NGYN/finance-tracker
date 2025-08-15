@@ -89,19 +89,28 @@ public class TransactionService {
     }
 
     // Update transaction
-    public TransactionDTO updateTransaction(Long id, TransactionDTO transactionDTO) {
-        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
-
+    public TransactionDTO updateTransaction(Long id, TransactionDTO updatedTransactionDTO) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
 
-        // Update fields
-        transaction.setAmount(transactionDTO.getAmount());
-        transaction.setDescription(transactionDTO.getDescription());
-        transaction.setDate(transactionDTO.getDate());
-        transaction.setType(transactionDTO.getType());
-        transaction.setCategory(category);
+        if (updatedTransactionDTO.getAmount() != null) {
+            transaction.setAmount(updatedTransactionDTO.getAmount());
+        }
+        if (updatedTransactionDTO.getDescription() != null) {
+            transaction.setDescription(updatedTransactionDTO.getDescription());
+        }
+        if (updatedTransactionDTO.getDate() != null) {
+            transaction.setDate(updatedTransactionDTO.getDate());
+        }
+        if (updatedTransactionDTO.getType() != null) {
+            transaction.setType(updatedTransactionDTO.getType());
+        }
+
+        if (updatedTransactionDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(updatedTransactionDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + updatedTransactionDTO.getCategoryId()));
+            transaction.setCategory(category);
+        }
 
         Transaction updatedTransaction = transactionRepository.save(transaction);
         return convertToDTO(updatedTransaction);
