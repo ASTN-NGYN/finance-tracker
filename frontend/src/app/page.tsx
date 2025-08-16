@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { DollarSign, TrendingDown, BarChart3, PiggyBank } from 'lucide-react';
 import { MetricCard } from '@/app/components/dashboard/metric-card';
 import { RecentTransactionsTable } from './components/dashboard/recent-transactions-table';
-import { getTotalExpenses, getTotalIncome } from "./utils/api";
+import { getTotalExpenses, getTotalIncome, getTotalSavings } from "./utils/api";
 
 export default function Home() {
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
+  const [totalSavings, setTotalSavings] = useState<number>(0);
   
   useEffect(() => {
     async function fetchTotals() {
@@ -23,6 +24,14 @@ export default function Home() {
       setTotalExpenses(expenses);
     }
     fetchExpenses();
+  }, []);
+
+  useEffect(() => {
+    async function fetchSavings() {
+      const savings = await getTotalSavings();
+      setTotalSavings(savings);
+    }
+    fetchSavings();
   }, []);
 
   // const monthlyBudgetLeft = 500 - totalExpenses;
@@ -49,7 +58,7 @@ export default function Home() {
       />
       <MetricCard
         title="Total Savings"
-        value="$6500.00"
+        value={`$${totalSavings.toFixed(2)}`}
         icon={PiggyBank}
         color="#ff00aa"
       />

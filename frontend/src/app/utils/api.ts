@@ -10,7 +10,7 @@ export async function getTotalIncome(): Promise<number> {
         const res = await api.get("/transactions/total-income");
         return res.data || 0;
     } catch (err) {
-        console.error("Error fetching total income:", err);
+        console.error("Error fetching total income: ", err);
         return 0;
     }
 }
@@ -20,7 +20,17 @@ export async function getTotalExpenses(): Promise<number> {
         const res = await api.get("/transactions/total-expenses");
         return res.data || 0;
     } catch (err) {
-        console.error("Error fetching total expenses:", err);
+        console.error("Error fetching total expenses: ", err);
+        return 0;
+    }
+}
+
+export async function getTotalSavings(): Promise<number> {
+    try {
+        const res = await api.get("/transactions/total-savings");
+        return res.data || 0;
+    } catch (err) {
+        console.error("Error fetching total savings: ", err);
         return 0;
     }
 }

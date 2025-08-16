@@ -47,10 +47,16 @@ public class TransactionController {
         return transactionService.getTotalIncome();
     }
 
-        // GET /transactions/total-expenses
+    // GET /transactions/total-expenses
     @GetMapping("/total-expenses")
     public BigDecimal getTotalExpenses() {
         return transactionService.getTotalExpenses();
+    }
+
+    // GET /transactions/total-savings
+    @GetMapping("/total-savings")
+    public BigDecimal getTotalSavings() {
+        return transactionService.getTotalSavings();
     }
 
     // GET /transactions/{id}
