@@ -1,9 +1,11 @@
 package com.austin.financetracker.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,7 @@ import com.austin.financetracker.service.TransactionService;
 
 @RestController
 @RequestMapping("/transactions")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -36,6 +39,24 @@ public class TransactionController {
             return transactionService.getTransactionsByType(type);
         }
         return transactionService.getAllTransactions();
+    }
+
+    // GET /transactions/total-income
+    @GetMapping("/total-income")
+    public BigDecimal getTotalIncome() {
+        return transactionService.getTotalIncome();
+    }
+
+    // GET /transactions/total-expenses
+    @GetMapping("/total-expenses")
+    public BigDecimal getTotalExpenses() {
+        return transactionService.getTotalExpenses();
+    }
+
+    // GET /transactions/total-savings
+    @GetMapping("/total-savings")
+    public BigDecimal getTotalSavings() {
+        return transactionService.getTotalSavings();
     }
 
     // GET /transactions/{id}
