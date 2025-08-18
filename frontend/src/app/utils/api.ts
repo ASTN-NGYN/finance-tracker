@@ -5,6 +5,15 @@ const api = axios.create({
     timeout: 5000,
 });
 
+export interface TransactionWithCategoryDTO {
+    id: number;
+    amount: number;
+    description: string;
+    date: string;
+    type: string;
+    categoryName: string;
+}
+
 export async function getTotalIncome(): Promise<number> {
     try {
         const res = await api.get("/transactions/total-income");
@@ -32,6 +41,16 @@ export async function getTotalSavings(): Promise<number> {
     } catch (err) {
         console.error("Error fetching total savings: ", err);
         return 0;
+    }
+}
+
+export async function getTransactionWithCategory(): Promise<TransactionWithCategoryDTO[]> {
+    try {
+        const res = await api.get("/transactions/with-categories");
+        return res.data;
+    } catch (err) {
+        console.error("Error fetching transactions with categories:", err);
+        return [];
     }
 }
 

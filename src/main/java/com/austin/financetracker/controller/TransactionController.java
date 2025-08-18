@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.TransactionDTO;
+import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.TransactionService;
 
@@ -39,6 +40,15 @@ public class TransactionController {
             return transactionService.getTransactionsByType(type);
         }
         return transactionService.getAllTransactions();
+    }
+
+    // GET /transactions/with-categories or GET /transactions/with-categories?type=EXPENSE (gets by type)
+    @GetMapping("/with-categories")
+    public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(@RequestParam(required = false) TransactionType type) {
+        if (type != null) {
+            return transactionService.getTransactionsWithCategoriesByType(type);
+        }
+        return transactionService.getAllTransactionsWithCategories();
     }
 
     // GET /transactions/total-income

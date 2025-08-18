@@ -9,6 +9,8 @@ export default function Home() {
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [totalSavings, setTotalSavings] = useState<number>(0);
+
+  const MONTHLY_BUDGET = 1000;
   
   useEffect(() => {
     async function fetchTotals() {
@@ -34,7 +36,7 @@ export default function Home() {
     fetchSavings();
   }, []);
 
-  // const monthlyBudgetLeft = 500 - totalExpenses;
+  const monthlyBudgetLeft = MONTHLY_BUDGET - totalExpenses;
 
   return (
     <main>
@@ -52,7 +54,7 @@ export default function Home() {
       />
       <MetricCard
         title="Monthly Budget Left"
-        value="$300.00/500.00"
+        value={`$${monthlyBudgetLeft.toFixed(2)} / ${MONTHLY_BUDGET.toFixed(2)}`}
         icon={BarChart3}
         color="#197dff"
       />
