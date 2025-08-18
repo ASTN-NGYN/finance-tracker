@@ -14,7 +14,6 @@ public class TransactionWithCategoryDTO {
     private LocalDate date;
     private TransactionType type;
     private String categoryName;
-    private String categoryDescription;
 
     public TransactionWithCategoryDTO() {
     }
@@ -26,7 +25,6 @@ public class TransactionWithCategoryDTO {
         this.date = transaction.getDate();
         this.type = transaction.getType();
         this.categoryName = transaction.getCategory().getName();
-        this.categoryDescription = transaction.getCategory().getDescription();
     }
 
     // Getters and setters
@@ -76,13 +74,5 @@ public class TransactionWithCategoryDTO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public String getCategoryDescription() {
-        return categoryDescription;
-    }
-
-    public void setCategoryDescription(String categoryDescription) {
-        this.categoryDescription = categoryDescription;
     }
 }

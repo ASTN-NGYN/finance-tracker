@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.austin.financetracker.dto.TransactionDTO;
+import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.Transaction;
 import com.austin.financetracker.entity.TransactionType;
@@ -64,9 +65,22 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
+    public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories() {
+    return transactionRepository.findAll().stream()
+            .map(TransactionWithCategoryDTO::new)
+            .collect(Collectors.toList());
+    }
+
     public List<TransactionDTO> getTransactionsByType(TransactionType type) {
         List<Transaction> transactions = transactionRepository.findByType(type);
         return transactions.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public List<TransactionWithCategoryDTO> getTransactionsWithCategoriesByType(TransactionType type) {
+    return transactionRepository.findByType(type)
+            .stream()
+            .map(TransactionWithCategoryDTO::new)
+            .collect(Collectors.toList());
     }
 
     public List<TransactionDTO> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
