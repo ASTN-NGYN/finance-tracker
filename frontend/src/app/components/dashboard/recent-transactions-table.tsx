@@ -4,13 +4,20 @@ import {
     TableHead, TableHeader, TableRow
 } from "@/components/ui/table"
 
+import { useState, useEffect } from "react";
+import { getTransactionWithCategory, TransactionWithCategoryDTO } from "@/app/utils/api";
+
 export function RecentTransactionsTable() {
-    const transactions = [
-    { date: "2025-08-10", description: "Grocery Store", category: "Food", amount: -54.32 },
-    { date: "2025-08-08", description: "Paycheck", category: "Income", amount: 2000 },
-    { date: "2025-08-07", description: "Electric Bill", category: "Utilities", amount: -120 },
-    { date: "2025-08-05", description: "Coffee Shop", category: "Food", amount: -4.75 },
-    ];
+
+    const [transactions, setTransactions] = useState<TransactionWithCategoryDTO[]>([]);
+
+    useEffect(() => {
+        async function fetchTransactions() {
+            const data = await getTransactionWithCategory();
+            setTransactions(data);
+        }
+        fetchTransactions();
+    }, []);
 
     return (
         <div className="bg-white rounded-md shadow-md border border-gray-200">
@@ -25,22 +32,25 @@ export function RecentTransactionsTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {transactions.map((tx, i) => (
-                        <TableRow key={i}>
-                            <TableCell>{tx.description}</TableCell>
-                            <TableCell>{tx.category}</TableCell>
-                            <TableCell>{tx.date}</TableCell>
+                    {transactions
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // newest first
+                        .slice(0, 10)
+                        .map((transaction) => (
+                        <TableRow key={transaction.id}>
+                            <TableCell>{transaction.description}</TableCell>
+                            <TableCell>{transaction.categoryName}</TableCell>
+                            <TableCell>{transaction.date}</TableCell>
                             <TableCell
-                                className={`text-right font-medium ${
-                                tx.amount < 0 ? "text-red-500" : "text-green-500"
-                                }`}
+                            className={`text-right font-medium ${
+                                transaction.type === "EXPENSE" ? "text-red-500" : "text-green-500"
+                            }`}
                             >
-                                {tx.amount < 0
-                                ? `-$${Math.abs(tx.amount).toFixed(2)}`
-                                : `$${tx.amount.toFixed(2)}`}
+                            {transaction.type === "EXPENSE"
+                                ? `-$${transaction.amount.toFixed(2)}`
+                                : `$${transaction.amount.toFixed(2)}`}
                             </TableCell>
                         </TableRow>
-                    ))}
+                        ))}
                 </TableBody>
             </Table>
         </div>
