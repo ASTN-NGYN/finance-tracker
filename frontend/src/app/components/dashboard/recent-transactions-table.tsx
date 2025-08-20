@@ -6,6 +6,7 @@ import {
 
 import { useState, useEffect } from "react";
 import { getTransactionWithCategory, TransactionWithCategoryDTO } from "@/app/utils/api";
+import Link from "next/link";
 
 export function RecentTransactionsTable() {
 
@@ -22,7 +23,6 @@ export function RecentTransactionsTable() {
     return (
         <div className="bg-white rounded-md shadow-md border border-gray-200">
             <Table className="">
-                <TableCaption>A list of recent transactions.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Description</TableHead>
@@ -33,7 +33,7 @@ export function RecentTransactionsTable() {
                 </TableHeader>
                 <TableBody>
                     {transactions
-                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // newest first
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .slice(0, 10)
                         .map((transaction) => (
                         <TableRow key={transaction.id}>
@@ -53,6 +53,11 @@ export function RecentTransactionsTable() {
                         ))}
                 </TableBody>
             </Table>
+            <div className="mt-4 text-center">
+                <button className="text-blue-600 hover:text-blue-800 text-md font-medium mb-4">
+                    <Link href={'/transactions'}>View All Transactions →</Link>
+                </button>
+            </div>
         </div>
     )
 }

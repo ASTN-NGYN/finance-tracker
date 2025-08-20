@@ -1,0 +1,8 @@
+target/
+*.log
+*.jar
+*.iml
+.idea
+.vscode
+node_modules
+npm-debug.log
