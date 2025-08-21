@@ -39,7 +39,9 @@ export function CategoriesCard() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full bg-blue-700">Manage Categories</Button>
+        <Link href="categories" className="w-full">
+            <Button className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer">Manage Categories</Button>
+        </Link>
       </CardFooter>
     </Card>
   );
