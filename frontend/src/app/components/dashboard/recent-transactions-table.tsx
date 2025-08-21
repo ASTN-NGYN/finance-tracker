@@ -1,7 +1,7 @@
 import {
     Table, TableBody, 
-    TableCaption, TableCell, 
-    TableHead, TableHeader, TableRow
+    TableCell, TableHead,
+    TableHeader, TableRow
 } from "@/components/ui/table"
 
 import { useState, useEffect } from "react";
@@ -21,8 +21,8 @@ export function RecentTransactionsTable() {
     }, []);
 
     return (
-        <div className="bg-white rounded-md shadow-md border border-gray-200">
-            <Table className="">
+        <div className="bg-white rounded-md shadow-md border border-gray-200 mb-6">
+            <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Description</TableHead>

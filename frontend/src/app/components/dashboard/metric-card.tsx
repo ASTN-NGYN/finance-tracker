@@ -1,6 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent, CardAction, CardFooter } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
-
+import { Card, CardContent, } from "@/components/ui/card";
 
 type MetricCardProps = {
   title: string;

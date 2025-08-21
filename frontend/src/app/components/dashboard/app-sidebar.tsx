@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Receipt, WalletMinimal, ChartPie, Trophy, BarChart2 } from "lucide-react";
+import { LayoutDashboard, Receipt, Grid, WalletMinimal, ChartPie, Trophy, BarChart2 } from "lucide-react";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
          SidebarGroupContent, SidebarHeader, 
@@ -12,6 +12,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
 const items = [
     { title: 'Dashboard', url: '/', icon: LayoutDashboard },
     { title: 'Transactions', url: '/transactions', icon: Receipt },
+    { title: 'Categories', url: '/categories', icon: Grid },
     { title: 'Accounts', url: '/accounts', icon: WalletMinimal },
     { title: 'Budgets', url: '/budgets', icon: ChartPie },
     { title: 'Goals', url: '/goals', icon: Trophy },
