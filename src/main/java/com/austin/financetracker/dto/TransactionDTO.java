@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import com.austin.financetracker.entity.TransactionType;
 
 public class TransactionDTO {
-    
+
     private BigDecimal amount;
     private String description;
     private LocalDate date;

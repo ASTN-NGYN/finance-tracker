@@ -12,7 +12,7 @@ export default function Home() {
   const [totalSavings, setTotalSavings] = useState<number>(0);
 
   const MONTHLY_BUDGET = 1000;
-  
+
   useEffect(() => {
     async function fetchTotals() {
       const income = await getTotalIncome();
@@ -66,7 +66,6 @@ export default function Home() {
         color="#ff00aa"
       />
       <RecentTransactionsTable />
-
       <CategoriesCard />
     </main>
   );

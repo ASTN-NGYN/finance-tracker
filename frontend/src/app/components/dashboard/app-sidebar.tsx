@@ -3,10 +3,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Receipt, Grid, WalletMinimal, ChartPie, Trophy, BarChart2 } from "lucide-react";
 
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
-         SidebarGroupContent, SidebarHeader, 
-         SidebarMenu, SidebarMenuButton, SidebarMenuItem
-        } from "@/components/ui/sidebar";
+import {
+    Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
+    SidebarGroupContent, SidebarHeader,
+    SidebarMenu, SidebarMenuButton, SidebarMenuItem
+} from "@/components/ui/sidebar";
 
 
 const items = [
@@ -34,7 +35,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton 
+                                    <SidebarMenuButton
                                         asChild
                                         isActive={pathname === item.url}
                                     >

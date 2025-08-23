@@ -1,5 +1,5 @@
 import {
-    Table, TableBody, 
+    Table, TableBody,
     TableCell, TableHead,
     TableHeader, TableRow
 } from "@/components/ui/table"
@@ -36,20 +36,19 @@ export function RecentTransactionsTable() {
                         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .slice(0, 10)
                         .map((transaction) => (
-                        <TableRow key={transaction.id}>
-                            <TableCell>{transaction.description}</TableCell>
-                            <TableCell>{transaction.categoryName}</TableCell>
-                            <TableCell>{transaction.date}</TableCell>
-                            <TableCell
-                            className={`text-right font-medium ${
-                                transaction.type === "EXPENSE" ? "text-red-500" : "text-green-500"
-                            }`}
-                            >
-                            {transaction.type === "EXPENSE"
-                                ? `-$${transaction.amount.toFixed(2)}`
-                                : `$${transaction.amount.toFixed(2)}`}
-                            </TableCell>
-                        </TableRow>
+                            <TableRow key={transaction.id}>
+                                <TableCell>{transaction.description}</TableCell>
+                                <TableCell>{transaction.categoryName}</TableCell>
+                                <TableCell>{transaction.date}</TableCell>
+                                <TableCell
+                                    className={`text-right font-medium ${transaction.type === "EXPENSE" ? "text-red-500" : "text-green-500"
+                                        }`}
+                                >
+                                    {transaction.type === "EXPENSE"
+                                        ? `-$${transaction.amount.toFixed(2)}`
+                                        : `$${transaction.amount.toFixed(2)}`}
+                                </TableCell>
+                            </TableRow>
                         ))}
                 </TableBody>
             </Table>

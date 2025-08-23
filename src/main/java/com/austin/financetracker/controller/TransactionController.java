@@ -21,7 +21,6 @@ import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.TransactionService;
 
-
 @RestController
 @RequestMapping("/transactions")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -42,9 +41,11 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
-    // GET /transactions/with-categories or GET /transactions/with-categories?type=EXPENSE (gets by type)
+    // GET /transactions/with-categories or GET
+    // /transactions/with-categories?type=EXPENSE (gets by type)
     @GetMapping("/with-categories")
-    public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(@RequestParam(required = false) TransactionType type) {
+    public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(
+            @RequestParam(required = false) TransactionType type) {
         if (type != null) {
             return transactionService.getTransactionsWithCategoriesByType(type);
         }
@@ -84,10 +85,10 @@ public class TransactionController {
     // GET /transactions/range?startDate=2024-01-01&endDate=2024-01-31
     @GetMapping("/range")
     public List<TransactionDTO> getTransactionsByDateRange(
-        @RequestParam LocalDate startDate,
-        @RequestParam LocalDate endDate) {
-            return transactionService.getTransactionsByDateRange(startDate, endDate);
-        }
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        return transactionService.getTransactionsByDateRange(startDate, endDate);
+    }
 
     // POST /transactions
     @PostMapping

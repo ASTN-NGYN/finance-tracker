@@ -16,9 +16,11 @@ import com.austin.financetracker.entity.TransactionType;
  * CategoryRepository is the app's gateway to the database for Category objects.
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {     // Extends, gives you access to CRUD operations
-    
-    // Find category by name (useful for lookups), optional means it might or might not be empty
+public interface CategoryRepository extends JpaRepository<Category, Long> { // Extends, gives you access to CRUD
+                                                                            // operations
+
+    // Find category by name (useful for lookups), optional means it might or might
+    // not be empty
     Optional<Category> findByName(String name);
 
     // Find all categories by transaction type (income vs expense categories)

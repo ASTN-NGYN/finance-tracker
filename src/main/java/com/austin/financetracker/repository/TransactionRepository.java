@@ -13,7 +13,6 @@ import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.Transaction;
 import com.austin.financetracker.entity.TransactionType;
 
-
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
@@ -42,8 +41,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     // Custom query to get total amount by type and date range
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = :type AND t.date BETWEEN :startDate AND :endDate")
     BigDecimal getTotalAmountByTypeAndDateRange(@Param("type") TransactionType type,
-                                                @Param("startDate") LocalDate startDate,
-                                                @Param("endDate") LocalDate endDate);
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
     // Custom query to get total amount by type and date range
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.category = :category")
