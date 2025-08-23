@@ -3,7 +3,7 @@ package com.austin.financetracker.dto;
 import com.austin.financetracker.entity.TransactionType;
 
 public class CategoryDTO {
-    
+
     private Long id;
     private String name;
     private String description;
@@ -23,6 +23,7 @@ public class CategoryDTO {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }

@@ -9,22 +9,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-
-@Entity     // Tells Spring Boot this class represents a database table
-@Table(name = "categories")     // Table name
+@Entity // Tells Spring Boot this class represents a database table
+@Table(name = "categories") // Table name
 public class Category {
-    
-    @Id     // Marks the following filed as a primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)     // Auto-increments the id
-    private Long id;    // id field
 
-    @Column(nullable = false, unique = true)    // Column where name is required and it must be unique
+    @Id // Marks the following filed as a primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increments the id
+    private Long id; // id field
+
+    @Column(nullable = false, unique = true) // Column where name is required and it must be unique
     private String name;
     private String description;
 
-    public Category() {}    // Default constructor required by JPA
+    public Category() {
+    } // Default constructor required by JPA
 
-    public Category(String name, String description, TransactionType type) {      // Constructor for creating new categories
+    public Category(String name, String description, TransactionType type) { // Constructor for creating new categories
         this.name = name;
         this.description = description;
         this.type = type;
