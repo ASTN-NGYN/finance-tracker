@@ -31,11 +31,16 @@ public class CategoryController {
 
     // GET /categories or GET /categories?type=EXPENSE (gets by type)
     @GetMapping
-    public List<Category> getCategory(@RequestParam(required = false) TransactionType type) {
+    public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type) {
+        List<Category> categories;
         if (type != null) {
-            return categoryService.getCategoriesByType(type);
+            categories = categoryService.getCategoriesByType(type);
+        } else {
+            categories = categoryService.getAllCategories();
         }
-        return categoryService.getAllCategories();
+        return categories.stream()
+                         .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
+                         .toList();
     }
 
     // GET /categories/{id}
