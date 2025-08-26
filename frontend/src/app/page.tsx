@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { DollarSign, TrendingDown, BarChart3, PiggyBank } from 'lucide-react';
-import { MetricCard } from '@/app/components/dashboard/metric-card';
+import { MetricCard } from './components/dashboard/metric-card';
 import { RecentTransactionsTable } from './components/dashboard/recent-transactions-table';
 import { CategoriesCard } from "./components/dashboard/categories-card";
 import { getTotalExpenses, getTotalIncome, getTotalSavings } from "./utils/api";

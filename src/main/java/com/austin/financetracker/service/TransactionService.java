@@ -100,7 +100,7 @@ public class TransactionService {
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setDescription(transactionDTO.getDescription());
         transaction.setDate(transactionDTO.getDate());
-        transaction.setType(transactionDTO.getType());
+        transaction.setType(category.getType());
         transaction.setCategory(category);
 
         Transaction savedTransaction = transactionRepository.save(transaction);

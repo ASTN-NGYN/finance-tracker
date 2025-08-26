@@ -18,7 +18,6 @@ export interface TransactionDTO {
     amount: number;
     description: string;
     date: string;
-    type: string;
     categoryId: number;
 }
 
