@@ -41,6 +41,7 @@ services:
       REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
     depends_on:
       - backend
+    command: npm run dev
 
 volumes:
   postgres-data: {}   # <-- top-level mapping
