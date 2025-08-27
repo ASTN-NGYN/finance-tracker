@@ -17,7 +17,7 @@ export default function CreateTransactionCard() {
   const [amount, setAmount] = useState<number | "">("");
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -59,7 +59,7 @@ export default function CreateTransactionCard() {
       setAmount("");
       setDescription("");
       setDate(new Date().toISOString().split("T")[0]);
-      setSelectedCategoryId(null);
+      setSelectedCategoryId(undefined);
     } catch (err) {
       console.error("Failed to create transaction:", err);
     }
@@ -110,16 +110,16 @@ export default function CreateTransactionCard() {
         <div>
           <label htmlFor="category">Category</label>
           <Select
-            value={selectedCategoryId ?? "none"}
+            value={selectedCategoryId}
             onValueChange={(value: string) => setSelectedCategoryId(value)}
           >
-            <SelectTrigger id="category">
+            <SelectTrigger id="category" className="cursor-pointer">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
               {categories.length > 0 ? (
                 categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id.toString()}>
+                  <SelectItem key={cat.id} value={cat.id.toString()} className="cursor-pointer">
                     {cat.name}
                   </SelectItem>
                 ))
@@ -133,7 +133,7 @@ export default function CreateTransactionCard() {
         </div>
 
         {/* Submit button */}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer">
           Save Transaction
         </Button>
       </form>
