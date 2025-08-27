@@ -1,5 +1,12 @@
-export default function transactions() {
+"use client";
+
+import CreateTransactionCard from "../components/transactions/create-transaction";
+
+
+export default function TransactionsPage() {
   return (
-    <div>Transactions</div>
+    <main>
+      <CreateTransactionCard />
+    </main>
   )
 }

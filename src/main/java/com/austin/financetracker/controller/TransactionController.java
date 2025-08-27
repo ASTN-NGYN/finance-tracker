@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.TransactionDTO;
+import com.austin.financetracker.dto.TransactionResponseDTO;
 import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.TransactionService;
@@ -34,7 +35,7 @@ public class TransactionController {
 
     // GET /transactions (gets all) or GET /transactions?type=EXPENSE (gets by type)
     @GetMapping
-    public List<TransactionDTO> getAllTransactions(@RequestParam(required = false) TransactionType type) {
+    public List<TransactionResponseDTO> getAllTransactions(@RequestParam(required = false) TransactionType type) {
         if (type != null) {
             return transactionService.getTransactionsByType(type);
         }
@@ -72,19 +73,19 @@ public class TransactionController {
 
     // GET /transactions/{id}
     @GetMapping("/{id}")
-    public TransactionDTO getTransactionById(@PathVariable Long id) {
+    public TransactionResponseDTO getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id);
     }
 
     // GET /transactions/category?categoryId={id} (gets by category)
     @GetMapping("/category")
-    public List<TransactionDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
+    public List<TransactionResponseDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
         return transactionService.getTransactionsByCategory(categoryId);
     }
 
     // GET /transactions/range?startDate=2024-01-01&endDate=2024-01-31
     @GetMapping("/range")
-    public List<TransactionDTO> getTransactionsByDateRange(
+    public List<TransactionResponseDTO> getTransactionsByDateRange(
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate) {
         return transactionService.getTransactionsByDateRange(startDate, endDate);
@@ -92,7 +93,7 @@ public class TransactionController {
 
     // POST /transactions
     @PostMapping
-    public TransactionDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
+    public TransactionResponseDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
         return transactionService.createTransaction(transactionDTO);
     }
 
@@ -105,7 +106,7 @@ public class TransactionController {
 
     // PUT /transactions/{id}
     @PutMapping("/{id}")
-    public TransactionDTO updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
+    public TransactionResponseDTO updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
         return transactionService.updateTransaction(id, transactionDTO);
     }
 

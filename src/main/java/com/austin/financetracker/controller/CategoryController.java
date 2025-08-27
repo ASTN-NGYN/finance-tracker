@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.austin.financetracker.service.CategoryService;
 
 @RestController
 @RequestMapping("/categories")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -31,11 +33,16 @@ public class CategoryController {
 
     // GET /categories or GET /categories?type=EXPENSE (gets by type)
     @GetMapping
-    public List<Category> getCategory(@RequestParam(required = false) TransactionType type) {
+    public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type) {
+        List<Category> categories;
         if (type != null) {
-            return categoryService.getCategoriesByType(type);
+            categories = categoryService.getCategoriesByType(type);
+        } else {
+            categories = categoryService.getAllCategories();
         }
-        return categoryService.getAllCategories();
+        return categories.stream()
+                         .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
+                         .toList();
     }
 
     // GET /categories/{id}

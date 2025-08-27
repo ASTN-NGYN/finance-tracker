@@ -14,6 +14,20 @@ export interface TransactionWithCategoryDTO {
     categoryName: string;
 }
 
+export interface TransactionDTO {
+    amount: number;
+    description: string;
+    date: string;
+    categoryId: number;
+}
+
+export interface CategoryDTO {
+    id: number;
+    name: string;
+    description: string;
+    type: string;
+}
+
 export async function getTotalIncome(): Promise<number> {
     try {
         const res = await api.get("/transactions/total-income");
@@ -51,6 +65,27 @@ export async function getTransactionWithCategory(): Promise<TransactionWithCateg
     } catch (err) {
         console.error("Error fetching transactions with categories:", err);
         return [];
+    }
+}
+
+export async function getCategories(): Promise<CategoryDTO[]> {
+    try {
+        const res = await api.get("/categories");
+        return res.data;
+    } catch (err) {
+        console.error("Error fetching all categories:", err);
+        return [];
+    }
+}
+
+
+export async function createTransaction(transactions: TransactionDTO) {
+    try {
+        const res = await api.post("/transactions", transactions)
+        return res.data
+    } catch (err) {
+        console.error("Error creating transactions:", err)
+        throw err
     }
 }
 
