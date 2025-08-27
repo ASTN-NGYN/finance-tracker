@@ -78,6 +78,7 @@ export async function getCategories(): Promise<CategoryDTO[]> {
     }
 }
 
+
 export async function createTransaction(transactions: TransactionDTO) {
     try {
         const res = await api.post("/transactions", transactions)

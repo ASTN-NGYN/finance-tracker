@@ -1,112 +1,142 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { CategoryDTO, createTransaction, getCategories, TransactionDTO } from "@/app/utils/api"
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { CategoryDTO, createTransaction, TransactionDTO, getCategories } from "@/app/utils/api";
 
-export function CreateTransaction() {
-  const [categories, setCategories] = useState<CategoryDTO[]>([])
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
-  const [type, setType] = useState<string>("")
-  const [status, setStatus] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+export default function CreateTransactionCard() {
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [amount, setAmount] = useState<number | "">("");
+  const [description, setDescription] = useState<string>("");
+  const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   useEffect(() => {
-    getCategories()
-      .then((data) => {
-        setCategories(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error("Failed to load categories:", err)
-        setLoading(false)
-      })
-  }, [])
-
-  // Update type when category changes
-  useEffect(() => {
-    if (selectedCategoryId !== null) {
-      const selectedCat = categories.find(cat => cat.id === selectedCategoryId)
-      if (selectedCat) {
-        setType(selectedCat.type)
-      } else {
-        setType("")
+    async function fetchCategories() {
+      try {
+        const data = await getCategories();
+        console.log("Fetched categories:", data);
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.error("Expected an array but got:", data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
       }
-    } else {
-      setType("")
     }
-  }, [selectedCategoryId, categories])
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault()
-  if (!selectedCategoryId) {
-    setStatus("Please select a category.")
-    return
-  }
+    fetchCategories();
+  }, []);
 
-  const formData = new FormData(e.currentTarget)
-  const transaction: TransactionDTO = {
-    amount: Number(formData.get("amount")),
-    description: (formData.get("description") as string) || "",
-    date: formData.get("date") as string,
-    categoryId: selectedCategoryId // backend infers type
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  createTransaction(transaction)
-    .then(() => {
-      e.currentTarget.reset()
-      setSelectedCategoryId(null)
-      setStatus("Transaction saved successfully!")
-    })
-    .catch((err) => {
-      console.error("Failed to create transaction:", err)
-      setStatus("Failed to save transaction.")
-    })
-}
+    if (!amount || !description || !date || !selectedCategoryId || selectedCategoryId === "none") {
+      alert("Please fill out all fields.");
+      return;
+    }
 
+    const transaction: TransactionDTO = {
+      amount: Number(amount),
+      description,
+      date,
+      categoryId: Number(selectedCategoryId),
+    };
+
+    try {
+      const res = await createTransaction(transaction);
+      console.log("Transaction created:", res);
+      // Reset form
+      setAmount("");
+      setDescription("");
+      setDate(new Date().toISOString().split("T")[0]);
+      setSelectedCategoryId(null);
+    } catch (err) {
+      console.error("Failed to create transaction:", err);
+    }
+  };
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>New Transaction</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input type="number" name="amount" placeholder="Amount" min="0" step="0.01" required />
-          <Input type="text" name="description" placeholder="Description (optional)" />
-          <Input type="date" name="date" defaultValue={new Date().toISOString().split("T")[0]} required />
+    <div className="max-w-md mx-auto p-4 border rounded-md shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Amount */}
+        <div>
+          <label htmlFor="amount">Amount</label>
+          <Input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.valueAsNumber || "")}
+            placeholder="Enter transaction amount"
+            required
+          />
+        </div>
 
-          {/* Category Select */}
-          <Select value={selectedCategoryId ? String(selectedCategoryId) : undefined} onValueChange={setSelectedCategoryId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
+        {/* Description */}
+        <div>
+          <label htmlFor="description">Description</label>
+          <Input
+            type="text"
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter transaction description"
+            required
+          />
+        </div>
+
+        {/* Date */}
+        <div>
+          <label htmlFor="date">Date</label>
+          <Input
+            type="date"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Category selector */}
+        <div>
+          <label htmlFor="category">Category</label>
+          <Select
+            value={selectedCategoryId ?? "none"}
+            onValueChange={(value: string) => setSelectedCategoryId(value)}
+          >
+            <SelectTrigger id="category">
+              <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map(cat => (
-                <SelectItem key={cat.id} value={String(cat.id)}>
-                  {cat.name} ({cat.type})
+              {categories.length > 0 ? (
+                categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id.toString()}>
+                    {cat.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="0" disabled>
+                  No categories available
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
+        </div>
 
-
-          {/* Show type for user info (optional) */}
-          {type && (
-            <div className="text-sm text-gray-500">Type: <span className="font-semibold">{type}</span></div>
-          )}
-
-          {/* Makes selected value part of the form if you ever need it */}
-          <input type="hidden" name="categoryId" value={selectedCategoryId ?? ""} />
-
-          {status && <p className="text-sm">{status}</p>}
-
-          <Button type="submit" className="w-full">Save Transaction</Button>
-        </form>
-      </CardContent>
-    </Card>
-  )
+        {/* Submit button */}
+        <Button type="submit" className="w-full">
+          Save Transaction
+        </Button>
+      </form>
+    </div>
+  );
 }

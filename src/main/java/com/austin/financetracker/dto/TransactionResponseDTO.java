@@ -53,4 +53,12 @@ public class TransactionResponseDTO {
     public void setType(TransactionType type) {
         this.type = type;
     }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 }
