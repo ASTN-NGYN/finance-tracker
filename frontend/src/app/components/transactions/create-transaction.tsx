@@ -3,13 +3,8 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, } from "@/components/ui/dialog";
 import { CategoryDTO, createTransaction, TransactionDTO, getCategories } from "@/app/utils/api";
 
 export default function CreateTransactionCard() {
@@ -17,31 +12,35 @@ export default function CreateTransactionCard() {
   const [amount, setAmount] = useState<number | "">("");
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
 
   useEffect(() => {
     async function fetchCategories() {
       try {
         const data = await getCategories();
-        console.log("Fetched categories:", data);
-        if (Array.isArray(data)) {
-          setCategories(data);
-        } else {
-          console.error("Expected an array but got:", data);
-        }
+        if (Array.isArray(data)) setCategories(data);
       } catch (err) {
         console.error("Failed to fetch categories:", err);
+        showDialog("Failed to fetch categories.");
       }
     }
-
     fetchCategories();
   }, []);
+
+  const showDialog = (message: string) => {
+    setDialogMessage(message);
+    setDialogOpen(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!amount || !description || !date || !selectedCategoryId || selectedCategoryId === "none") {
-      alert("Please fill out all fields.");
+      showDialog("Please fill out all fields.");
       return;
     }
 
@@ -53,22 +52,22 @@ export default function CreateTransactionCard() {
     };
 
     try {
-      const res = await createTransaction(transaction);
-      console.log("Transaction created:", res);
-      // Reset form
+      await createTransaction(transaction);
+      showDialog(`Transaction saved!`);
+
       setAmount("");
       setDescription("");
       setDate(new Date().toISOString().split("T")[0]);
-      setSelectedCategoryId(null);
+      setSelectedCategoryId(undefined);
     } catch (err) {
       console.error("Failed to create transaction:", err);
+      showDialog("Failed to create transaction. Please try again.");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 border rounded-md shadow-sm">
+    <div className="max-w-md mx-auto p-4 border rounded-md shadow-sm relative">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Amount */}
         <div>
           <label htmlFor="amount">Amount</label>
           <Input
@@ -81,7 +80,6 @@ export default function CreateTransactionCard() {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label htmlFor="description">Description</label>
           <Input
@@ -94,7 +92,6 @@ export default function CreateTransactionCard() {
           />
         </div>
 
-        {/* Date */}
         <div>
           <label htmlFor="date">Date</label>
           <Input
@@ -106,20 +103,19 @@ export default function CreateTransactionCard() {
           />
         </div>
 
-        {/* Category selector */}
         <div>
           <label htmlFor="category">Category</label>
           <Select
-            value={selectedCategoryId ?? "none"}
+            value={selectedCategoryId}
             onValueChange={(value: string) => setSelectedCategoryId(value)}
           >
-            <SelectTrigger id="category">
+            <SelectTrigger id="category" className="cursor-pointer">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
               {categories.length > 0 ? (
                 categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id.toString()}>
+                  <SelectItem key={cat.id} value={cat.id.toString()} className="cursor-pointer">
                     {cat.name}
                   </SelectItem>
                 ))
@@ -132,11 +128,33 @@ export default function CreateTransactionCard() {
           </Select>
         </div>
 
-        {/* Submit button */}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer">
           Save Transaction
         </Button>
       </form>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent
+          className="bg-white text-black rounded-xl shadow-xl p-6 w-[90%] max-w-md text-center
+                    flex flex-col justify-between min-h-[250px] md:min-h-[350px] lg:min-h-[400px] mt-[-50px]"
+          style={{ top: "40%" }}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-black">
+              Notification
+            </DialogTitle>
+          </DialogHeader>
+          <p className="my-4 text-black text-xl text-center">{dialogMessage}</p>
+          <DialogFooter className="flex justify-end">
+            <Button
+              onClick={() => setDialogOpen(false)}
+              className="bg-blue-700 hover:bg-blue-800 text-white cursor-pointer"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
