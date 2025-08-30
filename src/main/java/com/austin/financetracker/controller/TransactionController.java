@@ -22,6 +22,15 @@ import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.TransactionService;
 
+/**
+ * REST controller for managing financial transactions.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting
+ * transactions,
+ * as well as retrieving aggregated financial data such as income, expenses, and
+ * savings.
+ * </p>
+ */
 @RestController
 @RequestMapping("/transactions")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,11 +38,21 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+    /**
+     * Constructs a new {@code TransactionController} with the given service.
+     *
+     * @param transactionService the service used for transaction operations
+     */
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
-    // GET /transactions (gets all) or GET /transactions?type=EXPENSE (gets by type)
+    /**
+     * Retrieves all transactions or filters them by transaction type if provided.
+     *
+     * @param type optional transaction type to filter by (e.g., INCOME, EXPENSE)
+     * @return a list of {@link TransactionResponseDTO} objects
+     */
     @GetMapping
     public List<TransactionResponseDTO> getAllTransactions(@RequestParam(required = false) TransactionType type) {
         if (type != null) {
@@ -42,8 +61,13 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
-    // GET /transactions/with-categories or GET
-    // /transactions/with-categories?type=EXPENSE (gets by type)
+    /**
+     * Retrieves all transactions with their associated categories,
+     * optionally filtered by transaction type.
+     *
+     * @param type optional transaction type to filter by
+     * @return a list of {@link TransactionWithCategoryDTO} objects
+     */
     @GetMapping("/with-categories")
     public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(
             @RequestParam(required = false) TransactionType type) {
@@ -53,37 +77,65 @@ public class TransactionController {
         return transactionService.getAllTransactionsWithCategories();
     }
 
-    // GET /transactions/total-income
+    /**
+     * Calculates the total income across all transactions.
+     *
+     * @return the total income as a {@link BigDecimal}
+     */
     @GetMapping("/total-income")
     public BigDecimal getTotalIncome() {
         return transactionService.getTotalIncome();
     }
 
-    // GET /transactions/total-expenses
+    /**
+     * Calculates the total expenses across all transactions.
+     *
+     * @return the total expenses as a {@link BigDecimal}
+     */
     @GetMapping("/total-expenses")
     public BigDecimal getTotalExpenses() {
         return transactionService.getTotalExpenses();
     }
 
-    // GET /transactions/total-savings
+    /**
+     * Calculates the total savings (income - expenses).
+     *
+     * @return the total savings as a {@link BigDecimal}
+     */
     @GetMapping("/total-savings")
     public BigDecimal getTotalSavings() {
         return transactionService.getTotalSavings();
     }
 
-    // GET /transactions/{id}
+    /**
+     * Retrieves a transaction by its unique identifier.
+     *
+     * @param id the ID of the transaction to retrieve
+     * @return the {@link TransactionResponseDTO} if found
+     */
     @GetMapping("/{id}")
     public TransactionResponseDTO getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id);
     }
 
-    // GET /transactions/category?categoryId={id} (gets by category)
+    /**
+     * Retrieves all transactions belonging to a specific category.
+     *
+     * @param categoryId the ID of the category
+     * @return a list of {@link TransactionResponseDTO} objects
+     */
     @GetMapping("/category")
     public List<TransactionResponseDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
         return transactionService.getTransactionsByCategory(categoryId);
     }
 
-    // GET /transactions/range?startDate=2024-01-01&endDate=2024-01-31
+    /**
+     * Retrieves all transactions that occurred within a specified date range.
+     *
+     * @param startDate the start date of the range (inclusive)
+     * @param endDate   the end date of the range (inclusive)
+     * @return a list of {@link TransactionResponseDTO} objects
+     */
     @GetMapping("/range")
     public List<TransactionResponseDTO> getTransactionsByDateRange(
             @RequestParam LocalDate startDate,
@@ -91,26 +143,45 @@ public class TransactionController {
         return transactionService.getTransactionsByDateRange(startDate, endDate);
     }
 
-    // POST /transactions
+    /**
+     * Creates a new transaction.
+     *
+     * @param transactionDTO the data for the new transaction
+     * @return the created {@link TransactionResponseDTO}
+     */
     @PostMapping
     public TransactionResponseDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
         return transactionService.createTransaction(transactionDTO);
     }
 
-    // POST /transactions/default-transactions
+    /**
+     * Creates a predefined set of default transactions.
+     *
+     * @return a {@link ResponseEntity} containing a success message
+     */
     @PostMapping("/default-transactions")
     public ResponseEntity<String> createDefaultTransaction() {
         transactionService.createDefaultTransactions();
         return ResponseEntity.ok("Default transactions created successfully");
     }
 
-    // PUT /transactions/{id}
+    /**
+     * Updates an existing transaction with the given data.
+     *
+     * @param id             the ID of the transaction to update
+     * @param transactionDTO the updated transaction data
+     * @return the updated {@link TransactionResponseDTO}
+     */
     @PutMapping("/{id}")
     public TransactionResponseDTO updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
         return transactionService.updateTransaction(id, transactionDTO);
     }
 
-    // DELETE /transactions/{id}
+    /**
+     * Deletes a transaction by its unique identifier.
+     *
+     * @param id the ID of the transaction to delete
+     */
     @DeleteMapping("/{id}")
     public void deleteTransaction(@PathVariable Long id) {
         transactionService.deleteTransaction(id);
