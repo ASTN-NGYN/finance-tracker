@@ -20,6 +20,15 @@ import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.service.CategoryService;
 
+/**
+ * REST controller for managing {@link Category} entities.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting
+ * categories,
+ * as well as fetching categories by transaction type and creating default
+ * categories.
+ * </p>
+ */
 @RestController
 @RequestMapping("/categories")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,11 +36,22 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /**
+     * Constructs a new {@code CategoryController} with the given service.
+     *
+     * @param categoryService the service used for category operations
+     */
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    // GET /categories or GET /categories?type=EXPENSE (gets by type)
+    /**
+     * Retrieves all categories, or filters them by transaction type if provided.
+     *
+     * @param type optional transaction type to filter categories (e.g., INCOME,
+     *             EXPENSE)
+     * @return a list of {@link CategoryDTO} objects matching the criteria
+     */
     @GetMapping
     public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type) {
         List<Category> categories;
@@ -41,36 +61,60 @@ public class CategoryController {
             categories = categoryService.getAllCategories();
         }
         return categories.stream()
-                         .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
-                         .toList();
+                .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
+                .toList();
     }
 
-    // GET /categories/{id}
+    /**
+     * Retrieves a category by its unique identifier.
+     *
+     * @param id the ID of the category to retrieve
+     * @return an {@link Optional} containing the category if found, otherwise empty
+     */
     @GetMapping("/{id}")
     public Optional<Category> getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
     }
 
-    // POST /categories
+    /**
+     * Creates a new category based on the provided data.
+     *
+     * @param categoryDTO the data for the new category
+     * @return the created {@link Category} entity
+     */
     @PostMapping
     public Category createCategory(@RequestBody CategoryDTO categoryDTO) {
         return categoryService.createCategory(categoryDTO);
     }
 
-    // POST /categories/default-categories
+    /**
+     * Creates a predefined set of default categories in the system.
+     *
+     * @return a {@link ResponseEntity} with a success message upon completion
+     */
     @PostMapping("/default-categories")
     public ResponseEntity<String> createDefaultCategories() {
         categoryService.createDefaultCategories();
         return ResponseEntity.ok("Default categories created sucessfully");
     }
 
-    // PUT /categories/{id}
+    /**
+     * Updates an existing category with the provided data.
+     *
+     * @param id          the ID of the category to update
+     * @param categoryDTO the updated category data
+     * @return the updated {@link Category} entity
+     */
     @PutMapping("/{id}")
     public Category updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
         return categoryService.updateCategory(id, categoryDTO);
     }
 
-    // DELETE /categories/{id}
+    /**
+     * Deletes a category by its unique identifier.
+     *
+     * @param id the ID of the category to delete
+     */
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);

@@ -9,26 +9,46 @@ import org.springframework.stereotype.Repository;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 
-/*
- * Spring Data JPA Repository interface. A special interface that gives you 
- * automatic database access to Category entities.
- * 
- * CategoryRepository is the app's gateway to the database for Category objects.
+/**
+ * Repository interface for accessing {@link Category} entities in the database.
+ * <p>
+ * Extends {@link JpaRepository} to provide standard CRUD operations,
+ * as well as custom finder methods for querying categories by name and type.
+ * </p>
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> { // Extends, gives you access to CRUD
-                                                                            // operations
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    // Find category by name (useful for lookups), optional means it might or might
-    // not be empty
+    /**
+     * Finds a category by its exact name.
+     *
+     * @param name the name of the category
+     * @return an {@link Optional} containing the category if found, or empty if not
+     */
     Optional<Category> findByName(String name);
 
-    // Find all categories by transaction type (income vs expense categories)
+    /**
+     * Finds all categories that match the given {@link TransactionType}.
+     *
+     * @param type the transaction type (e.g., INCOME, EXPENSE)
+     * @return a list of categories with the specified type
+     */
     List<Category> findByType(TransactionType type);
 
-    // Find categories by name containing text (for search functionality)
+    /**
+     * Finds all categories whose names contain the given text, ignoring case.
+     *
+     * @param name the text to search for within category names
+     * @return a list of matching categories
+     */
     List<Category> findByNameContainingIgnoreCase(String name);
 
-    // Check if category exists by name
+    /**
+     * Checks if a category with the given name exists.
+     *
+     * @param name the name to check
+     * @return {@code true} if a category with the name exists, {@code false}
+     *         otherwise
+     */
     boolean existsByName(String name);
 }

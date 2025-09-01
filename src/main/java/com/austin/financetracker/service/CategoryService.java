@@ -10,33 +10,65 @@ import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
 
+/**
+ * Service class for managing {@link Category} entities.
+ * <p>
+ * Provides business logic for creating, updating, deleting, and retrieving
+ * categories, as well as searching by name and creating default categories.
+ * </p>
+ */
 @Service
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    
+
+    /**
+     * Constructs a {@code CategoryService} with the specified repository.
+     *
+     * @param categoryRepository the repository used for category persistence
+     */
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    
-    // Get all categories
+
+    /**
+     * Retrieves all categories from the database.
+     *
+     * @return a list of all {@link Category} entities
+     */
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    // Get category by ID
+    /**
+     * Retrieves a category by its unique ID.
+     *
+     * @param id the ID of the category
+     * @return an {@link Optional} containing the category if found, or empty if not
+     */
     public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
 
-    // Get categories by type (INCOME or EXPENSE)
+    /**
+     * Retrieves categories filtered by {@link TransactionType}.
+     *
+     * @param type the type of transaction (INCOME or EXPENSE)
+     * @return a list of categories of the specified type
+     */
     public List<Category> getCategoriesByType(TransactionType type) {
         return categoryRepository.findByType(type);
     }
 
-    // Create new category
+    /**
+     * Creates a new category from the provided {@link CategoryDTO}.
+     *
+     * @param categoryDTO the data transfer object containing category details
+     * @return the saved {@link Category} entity
+     * @throws IllegalArgumentException if a category with the same name already
+     *                                  exists
+     */
     public Category createCategory(CategoryDTO categoryDTO) {
-        // Business logic: Check if category already exists
         if (categoryRepository.existsByName(categoryDTO.getName())) {
             throw new IllegalArgumentException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
@@ -47,7 +79,15 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    // Update existing category
+    /**
+     * Updates an existing category identified by its ID with the provided
+     * {@link CategoryDTO} values.
+     *
+     * @param id                 the ID of the category to update
+     * @param updatedCategoryDTO the data transfer object containing updated details
+     * @return the updated {@link Category} entity
+     * @throws RuntimeException if the category with the given ID does not exist
+     */
     public Category updateCategory(Long id, CategoryDTO updatedCategoryDTO) {
         return categoryRepository.findById(id)
                 .map(category -> {
@@ -65,7 +105,12 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
-    // Delete category
+    /**
+     * Deletes a category by its ID.
+     *
+     * @param id the ID of the category to delete
+     * @throws RuntimeException if the category does not exist
+     */
     public void deleteCategory(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new RuntimeException("Category not found with id: " + id);
@@ -73,30 +118,48 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    // Search categories by name
+    /**
+     * Searches categories by name containing the given text, case-insensitive.
+     *
+     * @param name the search text
+     * @return a list of matching {@link Category} entities
+     */
     public List<Category> searchCategoriesByName(String name) {
         return categoryRepository.findByNameContainingIgnoreCase(name);
     }
 
-    // Get category by name
+    /**
+     * Retrieves a category by its exact name.
+     *
+     * @param name the name of the category
+     * @return an {@link Optional} containing the category if found, or empty if not
+     */
     public Optional<Category> getCategoryByName(String name) {
         return categoryRepository.findByName(name);
     }
 
-    // Create default categories (useful for initial setup)
+    /**
+     * Creates a set of default categories for initial application setup.
+     * <p>
+     * Includes default income and expense categories.
+     * </p>
+     */
     public void createDefaultCategories() {
-        // Income categories
         createCategoryIfNotExists("Salary", TransactionType.INCOME);
         createCategoryIfNotExists("Investment", TransactionType.INCOME);
-        // Expense categories
         createCategoryIfNotExists("Food", TransactionType.EXPENSE);
         createCategoryIfNotExists("Transportation", TransactionType.EXPENSE);
         createCategoryIfNotExists("Entertainment", TransactionType.EXPENSE);
         createCategoryIfNotExists("Housing", TransactionType.EXPENSE);
         createCategoryIfNotExists("Healthcare", TransactionType.EXPENSE);
-
     }
 
+    /**
+     * Helper method to create a category if it does not already exist.
+     *
+     * @param name the name of the category
+     * @param type the transaction type of the category
+     */
     private void createCategoryIfNotExists(String name, TransactionType type) {
         if (!categoryRepository.existsByName(name)) {
             Category category = new Category(name, "", type);

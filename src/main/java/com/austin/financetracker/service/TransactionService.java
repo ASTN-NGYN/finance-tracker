@@ -16,86 +16,161 @@ import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
 import com.austin.financetracker.repository.TransactionRepository;
 
+/**
+ * Service class for managing {@link Transaction} entities.
+ * Provides methods for creating, updating, deleting, retrieving, and
+ * filtering transactions. Also calculates totals and handles default
+ * transactions for testing.
+ */
 @Service
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
-    
+
+    /**
+     * Constructs a {@code TransactionService} with the specified repositories.
+     *
+     * @param transactionRepository the repository used for transaction persistence
+     * @param categoryRepository    the repository used for category persistence
+     */
     public TransactionService(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
     }
 
-    // Get all transactions
+    /**
+     * Retrieves all transactions as {@link TransactionResponseDTO}.
+     * 
+     * @return a list of all transactions
+     */
     public List<TransactionResponseDTO> getAllTransactions() {
         return transactionRepository.findAll().stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Computes the total income of all transactions.
+     * 
+     * @return total income, or zero if none
+     */
     public BigDecimal getTotalIncome() {
         BigDecimal total = transactionRepository.getTotalAmountByType(TransactionType.INCOME);
         return total != null ? total : BigDecimal.ZERO;
     }
 
+    /**
+     * Computes the total expenses of all transactions.
+     * 
+     * @return total expenses, or zero if none
+     */
     public BigDecimal getTotalExpenses() {
         BigDecimal total = transactionRepository.getTotalAmountByType(TransactionType.EXPENSE);
         return total != null ? total : BigDecimal.ZERO;
     }
 
+    /**
+     * Computes the total savings of all transactions.
+     * 
+     * @return total savings, or zero if none
+     */
     public BigDecimal getTotalSavings() {
         BigDecimal total = transactionRepository.getTotalAmountByType(TransactionType.SAVING);
         return total != null ? total : BigDecimal.ZERO;
     }
 
-    // Get transaction by id
+    /**
+     * Retrieves a transaction by ID.
+     * 
+     * @param id the transaction ID
+     * @return transaction as {@link TransactionResponseDTO}
+     * @throws RuntimeException if transaction is not found
+     */
     public TransactionResponseDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
         return convertToResponseDTO(transaction);
     }
 
-    // Get transaction by category
+    /**
+     * Retrieves transactions filtered by category ID.
+     * 
+     * @param categoryId the category ID
+     * @return list of transactions for the category
+     * @throws RuntimeException if category is not found
+     */
     public List<TransactionResponseDTO> getTransactionsByCategory(Long categoryId) {
-         Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
-        
+
         return transactionRepository.findByCategory(category).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all transactions with their associated categories.
+     * 
+     * @return list of {@link TransactionWithCategoryDTO}
+     */
     public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories() {
-    return transactionRepository.findAll().stream()
-            .map(TransactionWithCategoryDTO::new)
-            .collect(Collectors.toList());
+        return transactionRepository.findAll().stream()
+                .map(TransactionWithCategoryDTO::new)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves transactions filtered by {@link TransactionType}.
+     * 
+     * @param type the transaction type
+     * @return list of transactions for the type
+     */
     public List<TransactionResponseDTO> getTransactionsByType(TransactionType type) {
         List<Transaction> transactions = transactionRepository.findByType(type);
         return transactions.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves transactions with categories filtered by type.
+     * 
+     * @param type the transaction type
+     * @return list of {@link TransactionWithCategoryDTO} for the type
+     */
     public List<TransactionWithCategoryDTO> getTransactionsWithCategoriesByType(TransactionType type) {
-    return transactionRepository.findByType(type)
-            .stream()
-            .map(TransactionWithCategoryDTO::new)
-            .collect(Collectors.toList());
+        return transactionRepository.findByType(type)
+                .stream()
+                .map(TransactionWithCategoryDTO::new)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves transactions within a specified date range.
+     * 
+     * @param startDate start of date range (inclusive)
+     * @param endDate   end of date range (inclusive)
+     * @return list of transactions within the range
+     * @throws RuntimeException if startDate is after endDate
+     */
     public List<TransactionResponseDTO> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-        throw new RuntimeException("Start date cannot be after end date");
+            throw new RuntimeException("Start date cannot be after end date");
         }
         List<Transaction> transactions = transactionRepository.findByDateBetween(startDate, endDate);
         return transactions.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
 
-    // Create new transaction
+    /**
+     * Creates a new transaction from {@link TransactionDTO}.
+     * 
+     * @param transactionDTO the transaction data
+     * @return created transaction as {@link TransactionResponseDTO}
+     * @throws RuntimeException if category is not found
+     */
     public TransactionResponseDTO createTransaction(TransactionDTO transactionDTO) {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
+                .orElseThrow(
+                        () -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
 
         Transaction transaction = new Transaction();
         transaction.setAmount(transactionDTO.getAmount());
@@ -108,7 +183,14 @@ public class TransactionService {
         return convertToResponseDTO(savedTransaction);
     }
 
-    // Update transaction
+    /**
+     * Updates an existing transaction by ID using {@link TransactionDTO}.
+     * 
+     * @param id                    the transaction ID
+     * @param updatedTransactionDTO the updated transaction data
+     * @return updated transaction as {@link TransactionResponseDTO}
+     * @throws RuntimeException if transaction or category is not found
+     */
     public TransactionResponseDTO updateTransaction(Long id, TransactionDTO updatedTransactionDTO) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
@@ -125,7 +207,8 @@ public class TransactionService {
 
         if (updatedTransactionDTO.getCategoryId() != null) {
             Category category = categoryRepository.findById(updatedTransactionDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + updatedTransactionDTO.getCategoryId()));
+                    .orElseThrow(() -> new RuntimeException(
+                            "Category not found with id: " + updatedTransactionDTO.getCategoryId()));
 
             transaction.setCategory(category);
             transaction.setType(category.getType());
@@ -135,7 +218,12 @@ public class TransactionService {
         return convertToResponseDTO(updatedTransaction);
     }
 
-    // Delete transaction
+    /**
+     * Deletes a transaction by its ID.
+     * 
+     * @param id the transaction ID
+     * @throws RuntimeException if transaction is not found
+     */
     public void deleteTransaction(Long id) {
         if (!transactionRepository.existsById(id)) {
             throw new RuntimeException("Transaction not found with id: " + id);
@@ -143,21 +231,28 @@ public class TransactionService {
         transactionRepository.deleteById(id);
     }
 
-    // Helper method to convert Transaction entity to TransactionDTO
+    /**
+     * Converts a {@link Transaction} entity to {@link TransactionResponseDTO}.
+     * 
+     * @param transaction the transaction entity
+     * @return the response DTO
+     */
     private TransactionResponseDTO convertToResponseDTO(Transaction transaction) {
         return new TransactionResponseDTO(
-            transaction.getAmount(),
-            transaction.getDescription(),
-            transaction.getDate(),
-            transaction.getType(),  // type is now part of the response DTO
-            transaction.getCategory() != null ? transaction.getCategory().getId() : null
-        );
+                transaction.getAmount(),
+                transaction.getDescription(),
+                transaction.getDate(),
+                transaction.getType(),
+                transaction.getCategory() != null ? transaction.getCategory().getId() : null);
     }
 
-
-    // Create default transactions for testing
+    /**
+     * Creates default transactions for testing purposes.
+     * Includes salary, groceries, gas, rent, and entertainment transactions.
+     * Any errors during creation are printed to the console.
+     */
     public void createDefaultTransactions() {
-        
+
         TransactionDTO salary = new TransactionDTO();
         salary.setAmount(new BigDecimal("3000.00"));
         salary.setDescription("Monthly Salary");
@@ -187,16 +282,16 @@ public class TransactionService {
         entertainment.setDescription("Netflix subscription");
         entertainment.setDate(LocalDate.now().minusDays(7));
         entertainment.setCategoryId(5L);
-        
+
         try {
-        createTransaction(salary);
-        createTransaction(groceries);
-        createTransaction(gas);
-        createTransaction(rent);
-        createTransaction(entertainment);
-        System.out.println("Default transactions created successfully!");
+            createTransaction(salary);
+            createTransaction(groceries);
+            createTransaction(gas);
+            createTransaction(rent);
+            createTransaction(entertainment);
+            System.out.println("Default transactions created successfully!");
         } catch (Exception e) {
-            System.out.println("Error creating default transactions" + e.getMessage());
+            System.out.println("Error creating default transactions: " + e.getMessage());
         }
     }
 }

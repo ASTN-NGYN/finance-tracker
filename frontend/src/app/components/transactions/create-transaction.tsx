@@ -14,7 +14,6 @@ export default function CreateTransactionCard() {
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
 
-  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
