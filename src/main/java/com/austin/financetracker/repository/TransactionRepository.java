@@ -14,7 +14,8 @@ import com.austin.financetracker.entity.Transaction;
 import com.austin.financetracker.entity.TransactionType;
 
 /**
- * Repository interface for accessing {@link Transaction} entities in the database.
+ * Repository interface for accessing {@link Transaction} entities in the
+ * database.
  * <p>
  * Extends {@link JpaRepository} to provide standard CRUD operations,
  * as well as custom finder and aggregate methods for transactions.
@@ -49,7 +50,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
     /**
-     * Finds all transactions whose descriptions contain the specified text (case-insensitive).
+     * Finds all transactions whose descriptions contain the specified text
+     * (case-insensitive).
      *
      * @param description the text to search for
      * @return a list of matching transactions
@@ -86,7 +88,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     BigDecimal getTotalAmountByType(@Param("type") TransactionType type);
 
     /**
-     * Returns the total amount of all transactions of a specific type within a date range.
+     * Returns the total amount of all transactions of a specific type within a date
+     * range.
      *
      * @param type      the transaction type
      * @param startDate the start date (inclusive)

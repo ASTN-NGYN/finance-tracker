@@ -6,7 +6,8 @@ import java.time.LocalDate;
 import com.austin.financetracker.entity.TransactionType;
 
 /**
- * Data Transfer Object (DTO) for sending transaction data from the service layer
+ * Data Transfer Object (DTO) for sending transaction data from the service
+ * layer
  * to the client or controller.
  * <p>
  * Includes all relevant transaction information, including amount, description,
@@ -43,13 +44,14 @@ public class TransactionResponseDTO {
     /**
      * Constructs a new {@code TransactionResponseDTO} with the specified details.
      *
-     * @param amount     the transaction amount
+     * @param amount      the transaction amount
      * @param description the transaction description
      * @param date        the transaction date
      * @param type        the transaction type
      * @param categoryId  the ID of the category associated with this transaction
      */
-    public TransactionResponseDTO(BigDecimal amount, String description, LocalDate date, TransactionType type, Long categoryId) {
+    public TransactionResponseDTO(BigDecimal amount, String description, LocalDate date, TransactionType type,
+            Long categoryId) {
         this.amount = amount;
         this.description = description;
         this.date = date;

@@ -3,9 +3,11 @@ package com.austin.financetracker.dto;
 import com.austin.financetracker.entity.TransactionType;
 
 /**
- * Data Transfer Object (DTO) for {@link com.austin.financetracker.entity.Category}.
+ * Data Transfer Object (DTO) for
+ * {@link com.austin.financetracker.entity.Category}.
  * <p>
- * Used to transfer category data between layers, typically from the service layer
+ * Used to transfer category data between layers, typically from the service
+ * layer
  * to the controller or client. Contains basic category information without
  * including entity-specific persistence logic.
  * </p>

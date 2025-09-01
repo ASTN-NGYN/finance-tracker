@@ -5,9 +5,10 @@ package com.austin.financetracker.entity;
  * <p>
  * Transactions can be categorized as:
  * <ul>
- *   <li>{@link #INCOME} – Money earned or received (e.g., salary, gift, refund).</li>
- *   <li>{@link #EXPENSE} – Money spent (e.g., groceries, rent, utilities).</li>
- *   <li>{@link #SAVING} – Money set aside for savings or investments.</li>
+ * <li>{@link #INCOME} – Money earned or received (e.g., salary, gift,
+ * refund).</li>
+ * <li>{@link #EXPENSE} – Money spent (e.g., groceries, rent, utilities).</li>
+ * <li>{@link #SAVING} – Money set aside for savings or investments.</li>
  * </ul>
  * </p>
  *

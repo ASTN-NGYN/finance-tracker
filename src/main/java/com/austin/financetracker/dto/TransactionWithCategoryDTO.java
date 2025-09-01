@@ -53,7 +53,8 @@ public class TransactionWithCategoryDTO {
     }
 
     /**
-     * Constructs a {@code TransactionWithCategoryDTO} from a {@link Transaction} entity.
+     * Constructs a {@code TransactionWithCategoryDTO} from a {@link Transaction}
+     * entity.
      *
      * @param transaction the transaction entity to extract data from
      */

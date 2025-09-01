@@ -7,7 +7,8 @@ import java.time.LocalDate;
  * Data Transfer Object (DTO) for transferring transaction data
  * between layers, such as from the client to the service layer.
  * <p>
- * Contains only the necessary information to create or update a {@code Transaction},
+ * Contains only the necessary information to create or update a
+ * {@code Transaction},
  * without including entity-specific persistence logic.
  * </p>
  */
