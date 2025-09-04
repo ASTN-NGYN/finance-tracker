@@ -52,12 +52,7 @@ export default function CreateTransactionCard() {
 
     try {
       await createTransaction(transaction);
-      showDialog(`Transaction saved!`);
-
-      setAmount("");
-      setDescription("");
-      setDate(new Date().toISOString().split("T")[0]);
-      setSelectedCategoryId(undefined);
+      window.location.reload(); // full page refresh after transaction creation
     } catch (err) {
       console.error("Failed to create transaction:", err);
       showDialog("Failed to create transaction. Please try again.");
