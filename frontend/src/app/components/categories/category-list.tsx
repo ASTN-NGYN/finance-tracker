@@ -26,7 +26,8 @@ interface Category {
 export default function CategoryList() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [newName, setNewName] = useState("");
-    const [newType, setNewType] = useState<"INCOME" | "SAVING" | "EXPENSE">("EXPENSE");
+    const [newType, setNewType] = useState<"" | "INCOME" | "SAVING" | "EXPENSE">("");
+
     const [newDescription, setNewDescription] = useState("");
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -56,7 +57,15 @@ export default function CategoryList() {
 
     // Add category
     const handleAdd = async () => {
-        if (!newName.trim()) return;
+        // Validate required fields
+        if (!newName.trim()) {
+            alert("Category name is required.");
+            return;
+        }
+        if (!newType) {
+            alert("Category type is required.");
+            return;
+        }
 
         const categoryToCreate: CreateCategoryDTO = {
             name: newName.trim(),
@@ -133,13 +142,18 @@ export default function CategoryList() {
                     onChange={(e) => setNewType(e.target.value as "INCOME" | "SAVING" | "EXPENSE")}
                     className="w-full border rounded-md p-2"
                 >
+                    <option value="" disabled>
+                        Select type
+                    </option>
                     <option value="INCOME">INCOME</option>
                     <option value="SAVING">SAVING</option>
                     <option value="EXPENSE">EXPENSE</option>
                 </select>
+
                 <Button
                     onClick={handleAdd}
                     className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer"
+                    disabled={!newName.trim() || !newType}
                 >
                     Add Category
                 </Button>

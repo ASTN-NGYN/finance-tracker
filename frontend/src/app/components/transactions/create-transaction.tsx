@@ -59,6 +59,14 @@ export default function CreateTransactionCard() {
     }
   };
 
+  const isFormValid =
+    amount !== "" &&
+    description.trim() !== "" &&
+    date.trim() !== "" &&
+    selectedCategoryId !== undefined &&
+    selectedCategoryId !== "none";
+
+
   return (
     <div className="max-w-md mx-auto p-4 border rounded-md shadow-sm relative">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -122,9 +130,16 @@ export default function CreateTransactionCard() {
           </Select>
         </div>
 
-        <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer">
+        <Button
+          type="submit"
+          disabled={!isFormValid}
+          className={`w-full cursor-pointer bg-blue-700 hover:bg-blue-800 text-white ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+        >
           Save Transaction
         </Button>
+
+
       </form>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
