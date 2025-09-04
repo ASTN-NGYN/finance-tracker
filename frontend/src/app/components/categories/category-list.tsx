@@ -50,7 +50,7 @@ export default function CategoryList() {
   };
 
   return (
-    <div>
+    <div className="mt-10">
       <ScrollArea className="h-[400px] rounded-md border p-4 mb-6">
         <div className="grid grid-cols-2 gap-4">
           {categories.map((cat) => (
@@ -71,14 +71,21 @@ export default function CategoryList() {
         </div>
       </ScrollArea>
 
-      <div className="flex gap-2">
-        <Input
-          placeholder="New category"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-        />
-        <Button onClick={handleAdd}>Add Category</Button>
+        <div className="flex justify-center">
+            <div className="flex flex-col gap-2 w-full max-w-sm">
+                <Input
+                    placeholder="New category"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    className="w-full"
+                />
+                <Button onClick={handleAdd} className="w-full bg-blue-700 hover:bg-blue-800 cursor-pointer">
+                    Add Category
+                </Button>
+            </div>
       </div>
+
+
     </div>
   );
 }
