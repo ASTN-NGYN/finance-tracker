@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -116,4 +117,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @return a list of the 10 most recent transactions
      */
     List<Transaction> findTop10ByOrderByDateDesc();
+
+    @Modifying
+    @Query("DELETE FROM Transaction t WHERE t.category = :category")
+    void deleteByCategory(@Param("category") Category category);
+
 }

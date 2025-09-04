@@ -1,5 +1,8 @@
 package com.austin.financetracker.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
@@ -46,11 +50,18 @@ public class Category {
 
     /**
      * The type of transaction this category belongs to
-     * (e.g., INCOME or EXPENSE).
+     * (e.g., INCOME, EXPENSE, or SAVING).
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionType type;
+
+    /**
+     * All transactions associated with this category.
+     * Deleting a category will automatically delete all its transactions.
+     */
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Transaction> transactions;
 
     /**
      * Default constructor required by JPA.
@@ -141,5 +152,23 @@ public class Category {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Returns the list of transactions associated with this category.
+     *
+     * @return the list of transactions
+     */
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    /**
+     * Sets the list of transactions for this category.
+     *
+     * @param transactions the new list of transactions to assign
+     */
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }
