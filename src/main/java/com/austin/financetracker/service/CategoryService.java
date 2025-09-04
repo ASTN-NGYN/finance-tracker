@@ -9,6 +9,9 @@ import com.austin.financetracker.dto.CategoryDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
 import com.austin.financetracker.repository.CategoryRepository;
+import com.austin.financetracker.repository.TransactionRepository;
+
+import jakarta.transaction.Transactional;
 
 /**
  * Service class for managing {@link Category} entities.
@@ -21,14 +24,17 @@ import com.austin.financetracker.repository.CategoryRepository;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
 
     /**
-     * Constructs a {@code CategoryService} with the specified repository.
+     * Constructs a {@code CategoryService} with the specified repositories.
      *
-     * @param categoryRepository the repository used for category persistence
+     * @param categoryRepository    the repository used for category persistence
+     * @param transactionRepository the repository used for transaction persistence
      */
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, TransactionRepository transactionRepository) {
         this.categoryRepository = categoryRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     /**
@@ -106,16 +112,21 @@ public class CategoryService {
     }
 
     /**
-     * Deletes a category by its ID.
+     * Deletes a category by its unique identifier and removes all related
+     * transactions.
      *
      * @param id the ID of the category to delete
-     * @throws RuntimeException if the category does not exist
      */
+    @Transactional
     public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Category not found with id: " + id);
-        }
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // Delete all transactions for this category
+        transactionRepository.deleteByCategory(category);
+
+        // Delete the category itself
+        categoryRepository.delete(category);
     }
 
     /**

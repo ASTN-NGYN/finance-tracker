@@ -28,6 +28,12 @@ export interface CategoryDTO {
     type: string;
 }
 
+export interface CreateCategoryDTO {
+    name: string;
+    description?: string;
+    type: "INCOME" | "SAVING" | "EXPENSE";
+}
+
 export async function getTotalIncome(): Promise<number> {
     try {
         const res = await api.get("/transactions/total-income");
@@ -86,6 +92,25 @@ export async function createTransaction(transactions: TransactionDTO) {
     } catch (err) {
         console.error("Error creating transactions:", err)
         throw err
+    }
+}
+
+export async function createCategory(category: CreateCategoryDTO): Promise<CategoryDTO> {
+    try {
+        const res = await api.post("/categories", category);
+        return res.data;
+    } catch (err) {
+        console.error("Error creating category:", err);
+        throw err;
+    }
+}
+
+export async function deleteCategory(id: number) {
+    try {
+        await api.delete(`/categories/${id}`);
+    } catch (err) {
+        console.error("Failed to delete category:", err);
+        throw err;
     }
 }
 

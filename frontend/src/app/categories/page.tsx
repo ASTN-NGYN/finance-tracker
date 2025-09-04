@@ -1,5 +1,11 @@
+import CategoryList from "../components/categories/category-list";
+import { CategoriesCard } from "../components/dashboard/categories-card";
+
 export default function categories() {
   return (
-    <div>Categories</div>
+    <main>
+      <CategoriesCard />
+      <CategoryList />
+    </main>
   )
 }
