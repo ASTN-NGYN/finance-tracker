@@ -11,7 +11,7 @@ import {
 
 
 const items = [
-    { title: 'Dashboard', url: '/', icon: LayoutDashboard },
+    { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Transactions', url: '/transactions', icon: Receipt },
     { title: 'Categories', url: '/categories', icon: Grid },
     { title: 'Accounts', url: '/accounts', icon: WalletMinimal },
