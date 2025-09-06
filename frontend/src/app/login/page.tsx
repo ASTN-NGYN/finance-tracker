@@ -1,29 +1,47 @@
 "use client";
 
-
+import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { PiggyBank, DollarSign, Coins } from "lucide-react"; // finance icons
 
 export default function LoginPage() {
   const router = useRouter();
 
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error) alert(err.message);
+      else alert("Failed to login");
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 px-4">
-      <div className="w-full max-w-sm bg-white p-10 rounded-2xl shadow-2xl text-center">
-        <div className="flex justify-center mb-6">
-          <Image src="/google-g.svg" alt="Google Logo" width={48} height={48} />
-        </div>
-        <h1 className="text-3xl font-extrabold text-gray-800 mb-8">
-          Finance Tracker
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-400 to-blue-500 px-4">
+      <div className="w-full max-w-sm bg-white p-10 rounded-3xl shadow-2xl text-center relative overflow-hidden">
+        {/* Decorative icons */}
+        <DollarSign className="absolute -top-4 -left-4 text-green-200 w-10 h-10 rotate-12" />
+        <PiggyBank className="absolute -bottom-6 -right-6 text-blue-200 w-16 h-16 rotate-12" />
+        <Coins className="absolute top-1/3 -right-4 text-yellow-300 w-8 h-8" />
+
+        <h1 className="text-3xl font-extrabold text-gray-800 mb-6">Finance Tracker</h1>
+        <p className="mb-8 text-gray-500 text-sm">
+          Track your income, expenses, and savings securely.
+        </p>
+
         <button
+          onClick={handleGoogleLogin}
           className="flex items-center justify-center gap-3 w-full py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 hover:shadow-lg transition duration-300"
         >
-          {/* <Image src="/google-logo.svg" alt="Google" width={20} height={20} /> */}
+          <Image src="/google-g.svg" alt="Google" width={20} height={20} />
           Sign in with Google
         </button>
-        <p className="mt-6 text-gray-500 text-sm">
-          Securely login with your Google account
+
+        <p className="mt-6 text-gray-400 text-sm">
+          Sign in securely with your Google account
         </p>
       </div>
     </div>

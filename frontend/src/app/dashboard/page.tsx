@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { auth } from "../firebase";
+import { auth } from "@/lib/firebase";
 
 import { DollarSign, TrendingDown, BarChart3, PiggyBank } from 'lucide-react';
 import { MetricCard } from '../components/dashboard/metric-card';
@@ -12,28 +13,24 @@ import { getTotalExpenses, getTotalIncome, getTotalSavings } from "../utils/api"
 
 export default function Dashboard() {
   const router = useRouter();
-  const [loadingAuth, setLoadingAuth] = useState(true);
+  const { user, loading } = useAuth();
+
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [totalSavings, setTotalSavings] = useState<number>(0);
 
   const MONTHLY_BUDGET = 1000;
 
-  // Redirect unauthenticated users
+  // Redirect if not logged in
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        router.replace("/login");
-      } else {
-        setLoadingAuth(false);
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
 
   // Fetch totals after authentication
   useEffect(() => {
-    if (loadingAuth) return;
+    if (!user) return;
 
     async function fetchTotals() {
       const [income, expenses, savings] = await Promise.all([
@@ -48,9 +45,9 @@ export default function Dashboard() {
     }
 
     fetchTotals();
-  }, [loadingAuth]);
+  }, [user]);
 
-  if (loadingAuth) return <p className="text-center mt-10">Loading...</p>;
+  if (loading || !user) return <p className="text-center mt-10">Loading...</p>;
 
   const monthlyBudgetLeft = MONTHLY_BUDGET - totalExpenses;
 
@@ -66,7 +63,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Metric Cards - stacked vertically */}
+      {/* Metric Cards */}
       <div className="flex flex-col gap-4">
         <MetricCard
           title="Total Income"
@@ -94,7 +91,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Other Dashboard Components */}
       <RecentTransactionsTable />
       <CategoriesCard />
     </main>
