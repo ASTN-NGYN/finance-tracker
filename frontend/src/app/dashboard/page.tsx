@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 
 import { DollarSign, TrendingDown, BarChart3, PiggyBank } from 'lucide-react';
-import { MetricCard } from '../../components/dashboard/metric-card';
-import { RecentTransactionsTable } from '../../components/dashboard/recent-transactions-table';
-import { CategoriesCard } from "../../components/dashboard/categories-card";
-import { getTotalExpenses, getTotalIncome, getTotalSavings } from "../../utils/api";
+import { MetricCard } from '../components/dashboard/metric-card';
+import { RecentTransactionsTable } from '../components/dashboard/recent-transactions-table';
+import { CategoriesCard } from "../components/dashboard/categories-card";
+import { getTotalExpenses, getTotalIncome, getTotalSavings } from "../utils/api";
 
 export default function Dashboard() {
   const router = useRouter();
