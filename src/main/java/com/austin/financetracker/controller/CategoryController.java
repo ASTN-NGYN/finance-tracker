@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +26,7 @@ import com.austin.financetracker.service.CategoryService;
  * <p>
  * Provides endpoints for creating, retrieving, updating, and deleting
  * categories,
- * as well as fetching categories by transaction type and creating default
- * categories.
+ * as well as fetching categories by transaction type.
  * </p>
  */
 @RestController
@@ -48,19 +46,27 @@ public class CategoryController {
     }
 
     /**
-     * Retrieves all categories, or filters them by transaction type if provided.
+     * Retrieves all categories for a specific user, optionally filtering them by
+     * transaction type.
+     * <p>
+     * If {@code type} is provided, only categories of that transaction type for the
+     * given user
+     * are returned. Otherwise, all categories belonging to the user are returned.
+     * </p>
      *
-     * @param type optional transaction type to filter categories (e.g., INCOME,
-     *             EXPENSE)
-     * @return a list of {@link CategoryDTO} objects matching the criteria
+     * @param type    optional transaction type to filter categories (e.g., INCOME,
+     *                EXPENSE)
+     * @param userUid the UID of the user whose categories are being retrieved
+     * @return a list of {@link CategoryDTO} objects matching the criteria for the
+     *         specified user
      */
     @GetMapping
-    public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type) {
+    public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type, String userUid) {
         List<Category> categories;
         if (type != null) {
-            categories = categoryService.getCategoriesByType(type);
+            categories = categoryService.getCategoriesByType(type, userUid);
         } else {
-            categories = categoryService.getAllCategories();
+            categories = categoryService.getAllCategories(userUid);
         }
         return categories.stream()
                 .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
@@ -68,58 +74,75 @@ public class CategoryController {
     }
 
     /**
-     * Retrieves a category by its unique identifier.
+     * Retrieves a category by its unique ID for a specific user.
+     * <p>
+     * This method ensures that the category returned belongs to the user identified
+     * by {@code userUid}. If no such category exists for that user, an empty
+     * {@link Optional} is returned.
+     * </p>
      *
-     * @param id the ID of the category to retrieve
-     * @return an {@link Optional} containing the category if found, otherwise empty
+     * @param id      the ID of the category to retrieve
+     * @param userUid the UID of the user who owns the category
+     * @return an {@link Optional} containing the {@link Category} if found for the
+     *         user,
+     *         otherwise empty
      */
     @GetMapping("/{id}")
-    public Optional<Category> getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
+    public Optional<Category> getCategoryById(@PathVariable Long id, String userUid) {
+        return categoryService.getCategoryById(id, userUid);
     }
 
     /**
-     * Creates a new category based on the provided data.
+     * Creates a new category for a specific user based on the provided data.
+     * <p>
+     * The category will be associated with the user identified by {@code userUid}.
+     * </p>
      *
-     * @param categoryDTO the data for the new category
+     * @param categoryDTO the data transfer object containing the details of the new
+     *                    category
+     * @param userUid     the UID of the user who will own the category
      * @return the created {@link Category} entity
      */
     @PostMapping
-    public Category createCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.createCategory(categoryDTO);
+    public Category createCategory(@RequestBody CategoryDTO categoryDTO, String userUid) {
+        return categoryService.createCategory(categoryDTO, userUid);
     }
 
     /**
-     * Creates a predefined set of default categories in the system.
-     *
-     * @return a {@link ResponseEntity} with a success message upon completion
-     */
-    @PostMapping("/default-categories")
-    public ResponseEntity<String> createDefaultCategories() {
-        categoryService.createDefaultCategories();
-        return ResponseEntity.ok("Default categories created sucessfully");
-    }
-
-    /**
-     * Updates an existing category with the provided data.
+     * Updates an existing category for a specific user.
+     * <p>
+     * Only the category belonging to the user identified by {@code userUid} will be
+     * updated.
+     * If the category with the given {@code id} does not exist for that user, a
+     * {@link RuntimeException} will be thrown.
+     * </p>
      *
      * @param id          the ID of the category to update
-     * @param categoryDTO the updated category data
+     * @param categoryDTO the data transfer object containing updated category
+     *                    details
+     * @param userUid     the UID of the user who owns the category
      * @return the updated {@link Category} entity
      */
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(id, categoryDTO);
+    public Category updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO, String userUid) {
+        return categoryService.updateCategory(id, categoryDTO, userUid);
     }
 
     /**
-     * Deletes a category by its unique identifier.
+     * Deletes a category belonging to a specific user.
+     * <p>
+     * Only the category owned by the user identified by {@code userUid} will be
+     * deleted.
+     * If the category with the given {@code id} does not exist for that user, a
+     * {@link RuntimeException} will be thrown.
+     * </p>
      *
-     * @param id the ID of the category to delete
+     * @param id      the ID of the category to delete
+     * @param userUid the UID of the user who owns the category
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+    public void deleteCategory(@PathVariable Long id, String userUid) {
+        categoryService.deleteCategory(id, userUid);
     }
 }
