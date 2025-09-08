@@ -7,9 +7,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -62,6 +65,23 @@ public class Category {
      */
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Transaction> transactions;
+
+    /**
+     * The user who owns this category or transaction.
+     * <p>
+     * Establishes a many-to-one relationship with the {@link User} entity, meaning
+     * that multiple categories or transactions can belong to a single user.
+     * The {@code user_uid} column stores the Firebase UID of the user in the
+     * database.
+     * </p>
+     * <p>
+     * Uses {@link FetchType#LAZY} fetching, so the user information is only loaded
+     * when explicitly accessed, which helps improve performance.
+     * </p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_uid", nullable = false)
+    private User user;
 
     /**
      * Default constructor required by JPA.
@@ -170,5 +190,23 @@ public class Category {
      */
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    /**
+     * Returns the user associated with this category.
+     *
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * Sets the user for this category.
+     *
+     * @param user the user to assign
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 }

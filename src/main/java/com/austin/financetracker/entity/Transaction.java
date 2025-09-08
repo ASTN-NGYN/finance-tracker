@@ -73,6 +73,23 @@ public class Transaction {
     private TransactionType type;
 
     /**
+     * The user who owns this entity.
+     * <p>
+     * This defines a many-to-one relationship to the {@link User} entity, meaning
+     * that multiple instances of this entity (e.g., transactions or categories)
+     * can be associated with a single user. The {@code user_uid} column in the
+     * database stores the Firebase UID of the user.
+     * </p>
+     * <p>
+     * The {@link FetchType#LAZY} fetch type means the user data is only loaded
+     * from the database when explicitly accessed, improving performance.
+     * </p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_uid", nullable = false)
+    private User user;
+
+    /**
      * The category associated with this transaction.
      * <p>
      * Many transactions can belong to a single category.
@@ -217,6 +234,24 @@ public class Transaction {
      */
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    /**
+     * Returns the user associated with this transaction.
+     *
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * Sets the user for this transaction.
+     *
+     * @param user the user to assign
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
