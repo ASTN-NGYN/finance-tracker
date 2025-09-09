@@ -3,6 +3,7 @@ package com.austin.financetracker.repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,29 +27,52 @@ import com.austin.financetracker.entity.TransactionType;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     /**
-     * Finds all transactions with the specified {@link TransactionType}.
+     * Retrieves all transactions associated with a specific user.
      *
-     * @param type the type of transactions (INCOME, EXPENSE, SAVING)
-     * @return a list of transactions with the given type
+     * @param userUid the UID of the user whose transactions are to be retrieved
+     * @return a list of {@link Transaction} entities belonging to the specified
+     *         user
      */
-    List<Transaction> findByType(TransactionType type);
+    List<Transaction> findByUser_UserUid(String userUid);
 
     /**
-     * Finds all transactions belonging to a specific {@link Category}.
+     * Finds a transaction by its ID and the UID of the user who owns it.
+     *
+     * @param id      the ID of the transaction
+     * @param userUid the UID of the user
+     * @return an {@link Optional} containing the transaction if found
+     */
+    Optional<Transaction> findByIdAndUser_UserUid(Long id, String userUid);
+
+    /**
+     * Finds transactions by type and associated user's UID.
+     *
+     * @param type    the transaction type
+     * @param userUid the UID of the user who owns the transactions
+     * @return list of {@link Transaction} entities
+     */
+    List<Transaction> findByTypeAndUser_UserUid(TransactionType type, String userUid);
+
+    /**
+     * Finds all transactions of a user belonging to a specific {@link Category}.
      *
      * @param category the category to filter by
-     * @return a list of transactions in the specified category
+     * @param userUid  the UID of the user to filter by
+     * @return a list of transactions in the specified category of a user
      */
-    List<Transaction> findByCategory(Category category);
+    List<Transaction> findByCategoryAndUser_UserUid(Category category, String userUid);
 
     /**
-     * Finds all transactions within a given date range.
+     * Finds all transactions for a specific user that occurred within the given
+     * date range.
      *
-     * @param startDate the start date (inclusive)
-     * @param endDate   the end date (inclusive)
-     * @return a list of transactions between the specified dates
+     * @param startDate the start of the date range (inclusive)
+     * @param endDate   the end of the date range (inclusive)
+     * @param userUid   the UID of the user whose transactions are being retrieved
+     * @return a list of {@link Transaction} entities matching the date range and
+     *         user
      */
-    List<Transaction> findByDateBetween(LocalDate startDate, LocalDate endDate);
+    List<Transaction> findByDateBetweenAndUser_UserUid(LocalDate startDate, LocalDate endDate, String userUid);
 
     /**
      * Finds all transactions whose descriptions contain the specified text
@@ -80,13 +104,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByCategoryAndDateBetween(Category category, LocalDate startDate, LocalDate endDate);
 
     /**
-     * Returns the total amount of all transactions of a specific type.
+     * Returns the total amount of all transactions of a user by a specific type.
      *
-     * @param type the transaction type
-     * @return the sum of amounts for the given type
+     * @param type    the transaction type
+     * @param userUid the user Uid
+     * @return the sum of amounts for the given type of a user
      */
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = :type")
-    BigDecimal getTotalAmountByType(@Param("type") TransactionType type);
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = :type AND t.user.userUid = :userUid")
+    BigDecimal getTotalAmountByTypeAndUser(@Param("type") TransactionType type, @Param("userUid") String userUid);
 
     /**
      * Returns the total amount of all transactions of a specific type within a date
