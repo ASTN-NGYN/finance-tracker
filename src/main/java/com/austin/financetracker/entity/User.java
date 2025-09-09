@@ -1,8 +1,13 @@
 package com.austin.financetracker.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
@@ -31,6 +36,26 @@ public class User {
      */
     @Column(nullable = false)
     private String email;
+
+    /**
+     * The list of categories associated with this user.
+     * <p>
+     * This list is managed by JPA and uses cascading remove and orphan removal.
+     * When the user is deleted, all associated categories are also deleted.
+     * </p>
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private final List<Category> categories = new ArrayList<>();
+
+    /**
+     * The list of transactions associated with this user.
+     * <p>
+     * This list is managed by JPA and uses cascading remove and orphan removal.
+     * When the user is deleted, all associated transactions are also deleted.
+     * </p>
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private final List<Transaction> transactions = new ArrayList<>();
 
     /**
      * Default constructor required by JPA.
@@ -72,5 +97,23 @@ public class User {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * Returns the list of categories associated with this user.
+     *
+     * @return list of {@link Category} entities
+     */
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    /**
+     * Returns the list of transactions associated with this user.
+     *
+     * @return list of {@link Transaction} entities
+     */
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 }
