@@ -255,20 +255,21 @@ public class TransactionService {
      * Deletes a transaction by its ID for a specific user.
      * <p>
      * Only the transaction owned by the user identified by {@code userUid} will be
-     * deleted.
-     * If no such transaction exists, a {@link RuntimeException} is thrown.
+     * deleted. If no such transaction exists, a {@link RuntimeException} is thrown.
      * </p>
      *
      * @param id      the transaction ID
      * @param userUid the UID of the user who owns the transaction
+     * @return {@code true} if the transaction was successfully deleted
      * @throws RuntimeException if the transaction is not found for the user
      */
-    public void deleteTransaction(Long id, String userUid) {
+    public boolean deleteTransaction(Long id, String userUid) {
         Transaction transaction = transactionRepository.findByIdAndUser_UserUid(id, userUid)
-                .orElseThrow(
-                        () -> new RuntimeException("Transaction not found with id: " + id + " for user: " + userUid));
+                .orElseThrow(() -> new RuntimeException(
+                        "Transaction not found with id: " + id + " for user: " + userUid));
 
         transactionRepository.delete(transaction);
+        return true;
     }
 
     /**
@@ -279,6 +280,7 @@ public class TransactionService {
      */
     private TransactionResponseDTO convertToResponseDTO(Transaction transaction) {
         return new TransactionResponseDTO(
+                transaction.getId(),
                 transaction.getAmount(),
                 transaction.getDescription(),
                 transaction.getDate(),

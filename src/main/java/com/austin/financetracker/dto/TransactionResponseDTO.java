@@ -17,6 +17,11 @@ import com.austin.financetracker.entity.TransactionType;
 public class TransactionResponseDTO {
 
     /**
+     * The transaction id
+     */
+    private Long id;
+
+    /**
      * The monetary amount of the transaction.
      */
     private BigDecimal amount;
@@ -50,13 +55,32 @@ public class TransactionResponseDTO {
      * @param type        the transaction type
      * @param categoryId  the ID of the category associated with this transaction
      */
-    public TransactionResponseDTO(BigDecimal amount, String description, LocalDate date, TransactionType type,
+    public TransactionResponseDTO(Long id, BigDecimal amount, String description, LocalDate date, TransactionType type,
             Long categoryId) {
+        this.id = id;
         this.amount = amount;
         this.description = description;
         this.date = date;
         this.type = type;
         this.categoryId = categoryId;
+    }
+
+    /**
+     * Returns the unique identifier of this entity.
+     *
+     * @return the ID as a {@link Long}
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the unique identifier of this entity.
+     *
+     * @param id the ID to set as a {@link Long}
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
