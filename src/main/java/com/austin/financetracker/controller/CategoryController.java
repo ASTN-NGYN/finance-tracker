@@ -34,7 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * </p>
  */
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CategoryController {
 

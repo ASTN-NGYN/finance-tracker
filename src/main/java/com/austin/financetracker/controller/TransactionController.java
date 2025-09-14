@@ -36,7 +36,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * </p>
  */
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 @CrossOrigin(origins = "http://localhost:3000")
 public class TransactionController {
 
