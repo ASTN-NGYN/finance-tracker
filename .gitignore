@@ -36,3 +36,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Secrets folder (Firebase service account, API keys, etc.)
+.secrets/

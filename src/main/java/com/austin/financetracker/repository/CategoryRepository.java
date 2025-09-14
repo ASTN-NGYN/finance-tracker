@@ -20,28 +20,52 @@ import com.austin.financetracker.entity.TransactionType;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     /**
-     * Finds a category by its exact name.
+     * Finds all categories that belong to a specific user.
      *
-     * @param name the name of the category
+     * @param userUid the UID of the user
+     * @return a list of {@link Category} entities owned by the user
+     */
+    List<Category> findAllByUser_Uid(String userUid);
+
+    /**
+     * Finds a category by its exact name, ensuring it belongs to the specified
+     * user.
+     *
+     * @param name the exact name of the category
+     * @param uid  the UID of the user who owns the category
+     * @return an {@link Optional} containing the {@link Category} if found and
+     *         owned by the user,
+     *         or empty if no matching category exists for that user
+     */
+    Optional<Category> findByNameAndUser_Uid(String name, String uid);
+
+    /**
+     * Retrieves a category by its unique ID and user UID.
+     *
+     * @param id      the ID of the category
+     * @param userUid the UID of the owning user
      * @return an {@link Optional} containing the category if found, or empty if not
      */
-    Optional<Category> findByName(String name);
+    Optional<Category> findByIdAndUser_Uid(Long id, String uid);
 
     /**
-     * Finds all categories that match the given {@link TransactionType}.
+     * Finds categories by type and the UID of the owning user.
      *
-     * @param type the transaction type (e.g., INCOME, EXPENSE)
-     * @return a list of categories with the specified type
+     * @param type the type of transaction
+     * @param uid  the UID of the user who owns the categories
+     * @return a list of {@link Category} entities matching the given type and user
      */
-    List<Category> findByType(TransactionType type);
+    List<Category> findByTypeAndUser_Uid(TransactionType type, String uid);
 
     /**
-     * Finds all categories whose names contain the given text, ignoring case.
+     * Finds all categories whose names contain the given text (case-insensitive)
+     * and belong to the specified user.
      *
-     * @param name the text to search for within category names
-     * @return a list of matching categories
+     * @param name    the text to search for within category names
+     * @param userUid the UID of the user who owns the categories
+     * @return a list of {@link Category} entities matching the search text and user
      */
-    List<Category> findByNameContainingIgnoreCase(String name);
+    List<Category> findByNameContainingIgnoreCaseAndUser_Uid(String name, String userUid);
 
     /**
      * Checks if a category with the given name exists.
@@ -50,5 +74,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      * @return {@code true} if a category with the name exists, {@code false}
      *         otherwise
      */
-    boolean existsByName(String name);
+    boolean existsByNameAndUser_Uid(String name, String userUid);
+
 }

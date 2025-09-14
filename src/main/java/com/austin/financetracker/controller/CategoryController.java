@@ -1,9 +1,10 @@
 package com.austin.financetracker.controller;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,25 +15,26 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.austin.financetracker.dto.CategoryDTO;
 import com.austin.financetracker.entity.Category;
 import com.austin.financetracker.entity.TransactionType;
+import com.austin.financetracker.security.FirebaseAuthenticationFilter;
 import com.austin.financetracker.service.CategoryService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * REST controller for managing {@link Category} entities.
  * <p>
  * Provides endpoints for creating, retrieving, updating, and deleting
  * categories,
- * as well as fetching categories by transaction type and creating default
- * categories.
+ * as well as fetching categories by transaction type.
  * </p>
  */
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CategoryController {
 
@@ -48,78 +50,130 @@ public class CategoryController {
     }
 
     /**
-     * Retrieves all categories, or filters them by transaction type if provided.
+     * Retrieves categories for the authenticated user, optionally filtered by type.
      *
-     * @param type optional transaction type to filter categories (e.g., INCOME,
-     *             EXPENSE)
-     * @return a list of {@link CategoryDTO} objects matching the criteria
+     * @param type    optional {@link TransactionType} to filter categories
+     * @param request the HTTP request containing the "uid" attribute
+     * @return {@link ResponseEntity} with list of {@link CategoryDTO}, or 204 if no
+     *         categories found
      */
     @GetMapping
-    public List<CategoryDTO> getCategories(@RequestParam(required = false) TransactionType type) {
-        List<Category> categories;
-        if (type != null) {
-            categories = categoryService.getCategoriesByType(type);
-        } else {
-            categories = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDTO>> getCategories(
+            @RequestParam(required = false) TransactionType type,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        List<Category> categories = (type != null)
+                ? categoryService.getCategoriesByType(type, userUid)
+                : categoryService.getAllCategories(userUid);
+
+        if (categories.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        return categories.stream()
-                .map(c -> new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()))
-                .toList();
+
+        List<CategoryDTO> dtoList = new ArrayList<>();
+        for (Category c : categories) {
+            dtoList.add(new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType()));
+        }
+
+        return ResponseEntity.ok(dtoList);
     }
 
     /**
-     * Retrieves a category by its unique identifier.
-     *
-     * @param id the ID of the category to retrieve
-     * @return an {@link Optional} containing the category if found, otherwise empty
+     * Retrieves a category by its ID for the authenticated user.
+     * 
+     * @param id      the ID of the category to retrieve
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} containing the {@link CategoryDTO} if found,
+     *         or {@code 404 Not Found} if no matching category exists
      */
     @GetMapping("/{id}")
-    public Optional<Category> getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id, HttpServletRequest request) {
+        String userUid = (String) request.getAttribute("uid");
+        Optional<Category> categoryOpt = categoryService.getCategoryById(id, userUid);
+
+        if (categoryOpt.isPresent()) {
+            Category c = categoryOpt.get();
+            CategoryDTO dto = new CategoryDTO(c.getId(), c.getName(), c.getDescription(), c.getType());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
-     * Creates a new category based on the provided data.
+     * Creates a new category for the authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute "uid", set by {@link FirebaseAuthenticationFilter}.
+     * <p>
+     * Returns 201 Created with the newly created category in the response body
+     * and a Location header pointing to the new resource.
      *
-     * @param categoryDTO the data for the new category
-     * @return the created {@link Category} entity
+     * @param categoryDTO the category data to create
+     * @param request     the {@link HttpServletRequest} containing the "uid"
+     *                    attribute
+     * @return {@link ResponseEntity} containing the created {@link CategoryDTO} and
+     *         Location header
      */
     @PostMapping
-    public Category createCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.createCategory(categoryDTO);
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO,
+            HttpServletRequest request) {
+        String userUid = (String) request.getAttribute("uid");
+        Category createdCategory = categoryService.createCategory(categoryDTO, userUid);
+
+        CategoryDTO responseDTO = new CategoryDTO(createdCategory.getId(), createdCategory.getName(),
+                createdCategory.getDescription(), createdCategory.getType());
+
+        return ResponseEntity.created(URI.create("/categories/" + createdCategory.getId())).body(responseDTO);
     }
 
     /**
-     * Creates a predefined set of default categories in the system.
-     *
-     * @return a {@link ResponseEntity} with a success message upon completion
-     */
-    @PostMapping("/default-categories")
-    public ResponseEntity<String> createDefaultCategories() {
-        categoryService.createDefaultCategories();
-        return ResponseEntity.ok("Default categories created sucessfully");
-    }
-
-    /**
-     * Updates an existing category with the provided data.
+     * Updates an existing category for the authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute "uid", set by {@link FirebaseAuthenticationFilter}.
      *
      * @param id          the ID of the category to update
      * @param categoryDTO the updated category data
-     * @return the updated {@link Category} entity
+     * @param request     the {@link HttpServletRequest} containing the "uid"
+     *                    attribute
+     * @return a {@link ResponseEntity} containing the updated {@link CategoryDTO}
+     *         and HTTP 200 OK
      */
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(id, categoryDTO);
+    public ResponseEntity<CategoryDTO> updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryDTO categoryDTO,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        Category updatedCategory = categoryService.updateCategory(id, categoryDTO, userUid);
+
+        CategoryDTO responseDTO = new CategoryDTO(
+                updatedCategory.getId(),
+                updatedCategory.getName(),
+                updatedCategory.getDescription(),
+                updatedCategory.getType());
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     /**
-     * Deletes a category by its unique identifier.
+     * Deletes a category for the authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute "uid", set by {@link FirebaseAuthenticationFilter}.
      *
-     * @param id the ID of the category to delete
+     * @param id      the ID of the category to delete
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} with HTTP 204 No Content if deletion
+     *         succeeds
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id, HttpServletRequest request) {
+        String userUid = (String) request.getAttribute("uid");
+        categoryService.deleteCategory(id, userUid);
+        return ResponseEntity.noContent().build();
     }
 }

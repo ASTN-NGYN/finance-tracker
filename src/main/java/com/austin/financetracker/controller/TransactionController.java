@@ -1,6 +1,7 @@
 package com.austin.financetracker.controller;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +21,10 @@ import com.austin.financetracker.dto.TransactionDTO;
 import com.austin.financetracker.dto.TransactionResponseDTO;
 import com.austin.financetracker.dto.TransactionWithCategoryDTO;
 import com.austin.financetracker.entity.TransactionType;
+import com.austin.financetracker.security.FirebaseAuthenticationFilter;
 import com.austin.financetracker.service.TransactionService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * REST controller for managing financial transactions.
@@ -32,7 +36,7 @@ import com.austin.financetracker.service.TransactionService;
  * </p>
  */
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 @CrossOrigin(origins = "http://localhost:3000")
 public class TransactionController {
 
@@ -48,142 +52,272 @@ public class TransactionController {
     }
 
     /**
-     * Retrieves all transactions or filters them by transaction type if provided.
+     * Retrieves all transactions for the authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}.
+     * <p>
+     * Returns:
+     * <ul>
+     * <li>{@code 200 OK} with the list of transactions if any exist</li>
+     * <li>{@code 204 No Content} if the user has no transactions</li>
+     * </ul>
      *
-     * @param type optional transaction type to filter by (e.g., INCOME, EXPENSE)
-     * @return a list of {@link TransactionResponseDTO} objects
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} containing a list of
+     *         {@link TransactionResponseDTO}
+     *         or no content
      */
     @GetMapping
-    public List<TransactionResponseDTO> getAllTransactions(@RequestParam(required = false) TransactionType type) {
-        if (type != null) {
-            return transactionService.getTransactionsByType(type);
+    public ResponseEntity<List<TransactionResponseDTO>> getAllTransactions(HttpServletRequest request) {
+        String userUid = (String) request.getAttribute("uid");
+        List<TransactionResponseDTO> transactions = transactionService.getAllTransactions(userUid);
+
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        return transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
     }
 
     /**
-     * Retrieves all transactions with their associated categories,
-     * optionally filtered by transaction type.
+     * Retrieves all transactions with their categories for the authenticated user.
+     * <p>
+     * Optionally filters by {@link TransactionType} if {@code type} is provided.
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid" set by {@link FirebaseAuthenticationFilter}.
      *
-     * @param type optional transaction type to filter by
-     * @return a list of {@link TransactionWithCategoryDTO} objects
+     * @param type    optional transaction type to filter by (e.g., INCOME, EXPENSE,
+     *                SAVING)
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} containing a list of
+     *         {@link TransactionWithCategoryDTO}
+     *         (200 OK) or 204 No Content if no transactions exist
      */
     @GetMapping("/with-categories")
-    public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(
-            @RequestParam(required = false) TransactionType type) {
+    public ResponseEntity<List<TransactionWithCategoryDTO>> getAllTransactionsWithCategories(
+            @RequestParam(required = false) TransactionType type,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        List<TransactionWithCategoryDTO> transactions;
+
         if (type != null) {
-            return transactionService.getTransactionsWithCategoriesByType(type);
+            transactions = transactionService.getTransactionsWithCategoriesByType(type, userUid);
+        } else {
+            transactions = transactionService.getAllTransactionsWithCategories(userUid);
         }
-        return transactionService.getAllTransactionsWithCategories();
+
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(transactions);
     }
 
     /**
-     * Calculates the total income across all transactions.
+     * Returns the total amount of transactions of a given type for the
+     * authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}.
      *
-     * @return the total income as a {@link BigDecimal}
+     * @param type    the type of transaction (e.g., INCOME, EXPENSE, SAVING)
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} containing the total amount as a
+     *         {@link BigDecimal}
      */
-    @GetMapping("/total-income")
-    public BigDecimal getTotalIncome() {
-        return transactionService.getTotalIncome();
+    @GetMapping("/total")
+    public ResponseEntity<BigDecimal> getTotalByType(
+            @RequestParam TransactionType type,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        BigDecimal total = transactionService.getTotalByType(type, userUid);
+
+        return ResponseEntity.ok(total);
     }
 
     /**
-     * Calculates the total expenses across all transactions.
+     * Retrieves a transaction by ID for the authenticated user.
+     * <p>
+     * The Firebase UID is obtained from the {@link HttpServletRequest} attribute
+     * "uid"
+     * set by {@link FirebaseAuthenticationFilter}.
      *
-     * @return the total expenses as a {@link BigDecimal}
-     */
-    @GetMapping("/total-expenses")
-    public BigDecimal getTotalExpenses() {
-        return transactionService.getTotalExpenses();
-    }
-
-    /**
-     * Calculates the total savings (income - expenses).
-     *
-     * @return the total savings as a {@link BigDecimal}
-     */
-    @GetMapping("/total-savings")
-    public BigDecimal getTotalSavings() {
-        return transactionService.getTotalSavings();
-    }
-
-    /**
-     * Retrieves a transaction by its unique identifier.
-     *
-     * @param id the ID of the transaction to retrieve
-     * @return the {@link TransactionResponseDTO} if found
+     * @param id      the ID of the transaction
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return {@link ResponseEntity} with the transaction if found, or 404 Not
+     *         Found
      */
     @GetMapping("/{id}")
-    public TransactionResponseDTO getTransactionById(@PathVariable Long id) {
-        return transactionService.getTransactionById(id);
+    public ResponseEntity<TransactionResponseDTO> getTransactionById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+
+        TransactionResponseDTO transaction = transactionService.getTransactionById(id, userUid);
+
+        if (transaction == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(transaction);
     }
 
     /**
-     * Retrieves all transactions belonging to a specific category.
+     * Retrieves all transactions for the authenticated user belonging to a specific
+     * category.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}.
      *
-     * @param categoryId the ID of the category
-     * @return a list of {@link TransactionResponseDTO} objects
+     * @param categoryId the ID of the category to filter transactions by
+     * @param request    the {@link HttpServletRequest} containing the "uid"
+     *                   attribute
+     * @return a {@link ResponseEntity} containing the list of
+     *         {@link TransactionResponseDTO}
+     *         and HTTP 200 OK if transactions exist, or 204 No Content if none are
+     *         found
      */
     @GetMapping("/category")
-    public List<TransactionResponseDTO> getTransactionsByCategory(@RequestParam Long categoryId) {
-        return transactionService.getTransactionsByCategory(categoryId);
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionsByCategory(
+            @RequestParam Long categoryId,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionsByCategory(categoryId, userUid);
+
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(transactions);
     }
 
     /**
-     * Retrieves all transactions that occurred within a specified date range.
+     * Retrieves all transactions for the authenticated user within a specified date
+     * range.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}.
      *
-     * @param startDate the start date of the range (inclusive)
-     * @param endDate   the end date of the range (inclusive)
-     * @return a list of {@link TransactionResponseDTO} objects
+     * @param startDate the start date (inclusive) for filtering transactions
+     * @param endDate   the end date (inclusive) for filtering transactions
+     * @param request   the {@link HttpServletRequest} containing the "uid"
+     *                  attribute
+     * @return a {@link ResponseEntity} containing the list of
+     *         {@link TransactionResponseDTO}
+     *         and HTTP 200 OK if transactions exist, or 204 No Content if none are
+     *         found
      */
     @GetMapping("/range")
-    public List<TransactionResponseDTO> getTransactionsByDateRange(
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionsByDateRange(
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate) {
-        return transactionService.getTransactionsByDateRange(startDate, endDate);
+            @RequestParam LocalDate endDate,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionsByDateRange(startDate, endDate,
+                userUid);
+
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(transactions);
     }
 
     /**
-     * Creates a new transaction.
+     * Creates a new transaction for the currently authenticated user.
+     * <p>
+     * The user's Firebase UID is extracted from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}. The transaction is saved
+     * to the database and returned as a {@link TransactionResponseDTO}.
+     * <p>
+     * Returns a {@code 201 Created} response with the Location header pointing to
+     * the new transaction's URL.
      *
-     * @param transactionDTO the data for the new transaction
-     * @return the created {@link TransactionResponseDTO}
+     * @param transactionDTO the transaction data sent by the client
+     * @param request        the {@link HttpServletRequest} containing the "uid"
+     *                       attribute
+     * @return a {@link ResponseEntity} containing the created
+     *         {@link TransactionResponseDTO}
+     *         and a Location header for the new resource
      */
     @PostMapping
-    public TransactionResponseDTO createTransaction(@RequestBody TransactionDTO transactionDTO) {
-        return transactionService.createTransaction(transactionDTO);
+    public ResponseEntity<TransactionResponseDTO> createTransaction(
+            @RequestBody TransactionDTO transactionDTO,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        TransactionResponseDTO createdTransaction = transactionService.createTransaction(transactionDTO, userUid);
+
+        return ResponseEntity
+                .created(URI.create("/transactions/" + createdTransaction.getId()))
+                .body(createdTransaction);
     }
 
     /**
-     * Creates a predefined set of default transactions.
-     *
-     * @return a {@link ResponseEntity} containing a success message
-     */
-    @PostMapping("/default-transactions")
-    public ResponseEntity<String> createDefaultTransaction() {
-        transactionService.createDefaultTransactions();
-        return ResponseEntity.ok("Default transactions created successfully");
-    }
-
-    /**
-     * Updates an existing transaction with the given data.
+     * Updates an existing transaction for the currently authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}. The transaction with the
+     * specified ID is updated if it exists and belongs to the user.
      *
      * @param id             the ID of the transaction to update
      * @param transactionDTO the updated transaction data
-     * @return the updated {@link TransactionResponseDTO}
+     * @param request        the {@link HttpServletRequest} containing the "uid"
+     *                       attribute
+     * @return a {@link ResponseEntity} containing the updated
+     *         {@link TransactionResponseDTO}
+     *         and HTTP 200 OK if successful, or 404 Not Found if the transaction
+     *         does not exist
      */
     @PutMapping("/{id}")
-    public TransactionResponseDTO updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
-        return transactionService.updateTransaction(id, transactionDTO);
+    public ResponseEntity<TransactionResponseDTO> updateTransaction(
+            @PathVariable Long id,
+            @RequestBody TransactionDTO transactionDTO,
+            HttpServletRequest request) {
+
+        String userUid = (String) request.getAttribute("uid");
+        TransactionResponseDTO updatedTransaction = transactionService.updateTransaction(id, transactionDTO, userUid);
+
+        if (updatedTransaction == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedTransaction);
     }
 
     /**
-     * Deletes a transaction by its unique identifier.
+     * Deletes a transaction for the currently authenticated user.
+     * <p>
+     * The user's Firebase UID is obtained from the {@link HttpServletRequest}
+     * attribute
+     * "uid", set by {@link FirebaseAuthenticationFilter}. Only transactions
+     * belonging
+     * to this user can be deleted.
      *
-     * @param id the ID of the transaction to delete
+     * @param id      the ID of the transaction to delete
+     * @param request the {@link HttpServletRequest} containing the "uid" attribute
+     * @return a {@link ResponseEntity} with HTTP 204 No Content if deleted, or 404
+     *         Not Found
+     *         if the transaction does not exist
      */
     @DeleteMapping("/{id}")
-    public void deleteTransaction(@PathVariable Long id) {
-        transactionService.deleteTransaction(id);
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id, HttpServletRequest request) {
+        String userUid = (String) request.getAttribute("uid");
+        boolean deleted = transactionService.deleteTransaction(id, userUid);
+
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
