@@ -52,7 +52,7 @@ public class TransactionService {
      * @return a list of transactions belonging to the specified user
      */
     public List<TransactionResponseDTO> getAllTransactions(String userUid) {
-        return transactionRepository.findByUser_UserUid(userUid).stream()
+        return transactionRepository.findByUser_Uid(userUid).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -83,7 +83,7 @@ public class TransactionService {
      *                          exist
      */
     public TransactionResponseDTO getTransactionById(Long id, String userUid) {
-        Transaction transaction = transactionRepository.findByIdAndUser_UserUid(id, userUid)
+        Transaction transaction = transactionRepository.findByIdAndUser_Uid(id, userUid)
                 .orElseThrow(
                         () -> new RuntimeException("Transaction not found with id: " + id + "for user: " + userUid));
         return convertToResponseDTO(transaction);
@@ -104,7 +104,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException(
                         "Category not found with id: " + categoryId + "for user: " + userUid));
 
-        return transactionRepository.findByCategoryAndUser_UserUid(category, userUid).stream()
+        return transactionRepository.findByCategoryAndUser_Uid(category, userUid).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -117,7 +117,7 @@ public class TransactionService {
      * @return a list of {@link TransactionWithCategoryDTO} belonging to the user
      */
     public List<TransactionWithCategoryDTO> getAllTransactionsWithCategories(String userUid) {
-        return transactionRepository.findByUser_UserUid(userUid).stream()
+        return transactionRepository.findByUser_Uid(userUid).stream()
                 .map(TransactionWithCategoryDTO::new)
                 .collect(Collectors.toList());
     }
@@ -132,7 +132,7 @@ public class TransactionService {
      *         type and user
      */
     public List<TransactionResponseDTO> getTransactionsByType(TransactionType type, String userUid) {
-        List<Transaction> transactions = transactionRepository.findByTypeAndUser_UserUid(type, userUid);
+        List<Transaction> transactions = transactionRepository.findByTypeAndUser_Uid(type, userUid);
         return transactions.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
 
@@ -146,7 +146,7 @@ public class TransactionService {
      *         specified type and user
      */
     public List<TransactionWithCategoryDTO> getTransactionsWithCategoriesByType(TransactionType type, String userUid) {
-        return transactionRepository.findByTypeAndUser_UserUid(type, userUid)
+        return transactionRepository.findByTypeAndUser_Uid(type, userUid)
                 .stream()
                 .map(TransactionWithCategoryDTO::new)
                 .collect(Collectors.toList());
@@ -167,7 +167,7 @@ public class TransactionService {
         if (startDate.isAfter(endDate)) {
             throw new RuntimeException("Start date cannot be after end date");
         }
-        List<Transaction> transactions = transactionRepository.findByDateBetweenAndUser_UserUid(startDate, endDate,
+        List<Transaction> transactions = transactionRepository.findByDateBetweenAndUser_Uid(startDate, endDate,
                 userUid);
         return transactions.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
@@ -193,7 +193,7 @@ public class TransactionService {
                 .orElseThrow(
                         () -> new RuntimeException("Category not found with id: " + transactionDTO.getCategoryId()));
 
-        User user = userRepository.findByUserUid(userUid)
+        User user = userRepository.findByUid(userUid)
                 .orElseThrow(() -> new RuntimeException("User not found with uid: " + userUid));
 
         Transaction transaction = new Transaction();
@@ -224,7 +224,7 @@ public class TransactionService {
      *                          for the user
      */
     public TransactionResponseDTO updateTransaction(Long id, TransactionDTO updatedTransactionDTO, String userUid) {
-        Transaction transaction = transactionRepository.findByIdAndUser_UserUid(id, userUid)
+        Transaction transaction = transactionRepository.findByIdAndUser_Uid(id, userUid)
                 .orElseThrow(
                         () -> new RuntimeException("Transaction not found with id: " + id + " for user: " + userUid));
 
@@ -264,7 +264,7 @@ public class TransactionService {
      * @throws RuntimeException if the transaction is not found for the user
      */
     public boolean deleteTransaction(Long id, String userUid) {
-        Transaction transaction = transactionRepository.findByIdAndUser_UserUid(id, userUid)
+        Transaction transaction = transactionRepository.findByIdAndUser_Uid(id, userUid)
                 .orElseThrow(() -> new RuntimeException(
                         "Transaction not found with id: " + id + " for user: " + userUid));
 

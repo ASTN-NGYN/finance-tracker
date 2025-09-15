@@ -1,5 +1,6 @@
 package com.austin.financetracker.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -64,7 +65,7 @@ public class Category {
      * Deleting a category will automatically delete all its transactions.
      */
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
 
     /**
      * The user who owns this category or transaction.

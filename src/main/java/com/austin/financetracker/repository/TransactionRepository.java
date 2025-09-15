@@ -33,7 +33,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @return a list of {@link Transaction} entities belonging to the specified
      *         user
      */
-    List<Transaction> findByUser_UserUid(String userUid);
+    List<Transaction> findByUser_Uid(String userUid);
 
     /**
      * Finds a transaction by its ID and the UID of the user who owns it.
@@ -42,7 +42,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param userUid the UID of the user
      * @return an {@link Optional} containing the transaction if found
      */
-    Optional<Transaction> findByIdAndUser_UserUid(Long id, String userUid);
+    Optional<Transaction> findByIdAndUser_Uid(Long id, String userUid);
 
     /**
      * Finds transactions by type and associated user's UID.
@@ -51,7 +51,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param userUid the UID of the user who owns the transactions
      * @return list of {@link Transaction} entities
      */
-    List<Transaction> findByTypeAndUser_UserUid(TransactionType type, String userUid);
+    List<Transaction> findByTypeAndUser_Uid(TransactionType type, String userUid);
 
     /**
      * Finds all transactions of a user belonging to a specific {@link Category}.
@@ -60,7 +60,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param userUid  the UID of the user to filter by
      * @return a list of transactions in the specified category of a user
      */
-    List<Transaction> findByCategoryAndUser_UserUid(Category category, String userUid);
+    List<Transaction> findByCategoryAndUser_Uid(Category category, String userUid);
 
     /**
      * Finds all transactions for a specific user that occurred within the given
@@ -72,7 +72,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @return a list of {@link Transaction} entities matching the date range and
      *         user
      */
-    List<Transaction> findByDateBetweenAndUser_UserUid(LocalDate startDate, LocalDate endDate, String userUid);
+    List<Transaction> findByDateBetweenAndUser_Uid(LocalDate startDate, LocalDate endDate, String userUid);
 
     /**
      * Finds all transactions whose descriptions contain the specified text
@@ -110,7 +110,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param userUid the user Uid
      * @return the sum of amounts for the given type of a user
      */
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = :type AND t.user.userUid = :userUid")
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = :type AND t.user.uid = :userUid")
     BigDecimal getTotalAmountByTypeAndUser(@Param("type") TransactionType type, @Param("userUid") String userUid);
 
     /**
