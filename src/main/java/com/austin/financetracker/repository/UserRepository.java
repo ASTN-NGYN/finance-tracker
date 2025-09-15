@@ -21,5 +21,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return an {@link Optional} containing the {@link User} if found,
      *         or an empty {@link Optional} if no user exists with the given UID
      */
-    Optional<User> findByUserUid(String uid);
+    Optional<User> findByUid(String uid);
 }

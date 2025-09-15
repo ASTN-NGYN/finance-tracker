@@ -266,7 +266,7 @@ public class Transaction {
                 ", description='" + description + '\'' +
                 ", date=" + date +
                 ", type=" + type +
-                ", category=" + category.getName() +
+                ", category=" + (category != null ? category.getName() : "null") +
                 '}';
     }
 

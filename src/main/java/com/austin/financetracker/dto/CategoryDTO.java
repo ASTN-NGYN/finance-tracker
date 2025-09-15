@@ -35,16 +35,6 @@ public class CategoryDTO {
     private TransactionType type;
 
     /**
-     * The UID of the user who owns this entity.
-     * <p>
-     * This value corresponds to the UID from the {@link User} entity,
-     * typically provided by Firebase authentication. It is used to
-     * associate transactions or categories with a specific user.
-     * </p>
-     */
-    private String userUid;
-
-    /**
      * Default constructor.
      */
     public CategoryDTO() {
@@ -135,23 +125,5 @@ public class CategoryDTO {
      */
     public void setType(TransactionType type) {
         this.type = type;
-    }
-
-    /**
-     * Returns the UID of the user who owns this entity.
-     *
-     * @return the user UID
-     */
-    public String getUserUid() {
-        return userUid;
-    }
-
-    /**
-     * Sets the UID of the user who owns this entity.
-     *
-     * @param userUid the user UID to set
-     */
-    public void setUserUid(String userUid) {
-        this.userUid = userUid;
     }
 }

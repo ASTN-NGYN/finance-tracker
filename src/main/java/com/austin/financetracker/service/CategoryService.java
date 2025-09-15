@@ -58,7 +58,7 @@ public class CategoryService {
      * @throws RuntimeException if no user is found with the provided UID
      */
     public User getUserByUid(String userUid) {
-        return userRepository.findByUserUid(userUid)
+        return userRepository.findByUid(userUid)
                 .orElseThrow(() -> new RuntimeException("User not found with uid: " + userUid));
     }
 
@@ -115,7 +115,7 @@ public class CategoryService {
      *                                  exist
      */
     public Category createCategory(CategoryDTO categoryDTO, String userUid) {
-        User user = userRepository.findByUserUid(userUid)
+        User user = userRepository.findByUid(userUid)
                 .orElseThrow(() -> new RuntimeException("User not found with UID: " + userUid));
 
         if (categoryRepository.existsByNameAndUser_Uid(categoryDTO.getName(), userUid)) {
